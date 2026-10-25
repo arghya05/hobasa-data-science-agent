@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 5 and CP-1 cite \"record:brief (guardrails)\" for \"This agent may not push to protected main or merge\". The brief does not say this. The rule is in the agent definition (\"no merge, deploy, protected-main push\") and in the grounded-output skill (\"never push or merge (the spine does)\"). The citation should point to the actual source. The fact itself is correct.",
+    "Section 5 says the PR is \"Not raised in this step\" and cites record:brief, but the brief does not say when the PR is raised. Neither the code push nor the PR in the workbook outcome happens in this step. A gate reader should see that both are left for the spine or a later step, and that CP-3 is the open question that covers it.",
+    "The row \"git push, merge and reset are run only by the spine\" cites tool:bash (hook response). The hook text that says this appeared in attempt 1 of DS-07 (hooks/DS-07_attempt1.jsonl). The current attempt only got \"G9: step DS-07 may run only no shell commands\". It should say which hook response it draws on.",
+    "Section 1.1 lists the files in commit 2e6fb82 from the task.code and task.unit_tests working-tree descriptions, not from the commit tree. It should say that the file list is inferred from the working tree as it stood at commit time, because nothing listed the commit's contents.",
+    "Section 4 could add that origin/feature/story is at d67e866, the base commit that the spine's commit 2e6fb82 builds on (.git/logs/refs/remotes/origin/feature/story, .git/logs/refs/heads/feature/story). That is direct evidence that a fast-forward push is possible today, which bears on CP-2."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked every statement against the sources. The commit facts match ap_forecast/.git/logs/HEAD and logs/refs/heads/feature/story: commit 2e6fb82 on feature/story, made by the Hobasa Agent Spine, with the message 'STORY # task.commit: FEAT-ZD-48600 (Data Science lane, ap_forecast)'. The CI figures (11 tests, 100.0% coverage, 0 static issues, passed) match both the tool-view line and task.unit_tests section 3. The file and test descriptions match task.code, task.unit_tests, tests/test_risk.py and tests/test_forecast.py. These include the six VendorRiskTest tests, the two new STORY-04 tests, the version going from 0.9.0 to 0.10.0, and strict > against 30 and 10. The proposed message's IDs (EP-1, FT-2, TK-03.1/03.2/04.1/04.2, AC-03.1 to AC-03.8, AC-04.1 to AC-04.5) all appear in feat.stories. The finding that the commit message breaks the 'Commit messages start with the story ID' convention is correct (memory/MEMORY.md). I grepped the checkout for secrets: the only matches are max_tokens, as the output says. The previous refusal was about '82' in 2e6fb82, and the git logs and tool view now confirm that hash. I found no invented facts. The citation issues above are minor and do not block. The output is honest that the workbook outcome (push completed, PR raised) is not met in this step and leaves it to the spine. The commit-message rewording it asks for is a sound recommendation."
+}

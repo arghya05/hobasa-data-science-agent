@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G3 numbers ['82'] in \"The code is committed on feature/story as commit 2e6fb82 with the message 'STORY # task.commit: FEAT\" do not appear in tool:repo; record:memory"
+  ]
+}
