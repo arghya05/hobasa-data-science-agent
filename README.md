@@ -20,3 +20,11 @@ Data Science Agent in the Hobasa agentic SDLC. Owner: Data scientist; infra and 
 | DS-08 | Code Quality Failure ³ ⁶ | task.commit | task.code, task.commit | checks + sampled evaluation |
 | DS-09 | Share the PR for review ⁶ | task.commit | task.pr | PR reviewer |
 | DS-10 | Update the defect ⁴ | feat.defects, task.pr | feat.defects | checks + sampled evaluation |
+
+<!-- work:FEAT-ZD-48600:start -->
+## Work done for FEAT-ZD-48600
+
+| Step | Name | Status | Input | Output | Details |
+|---|---|---|---|---|---|
+| DS-01 | Checking the coding prerequisites ⁶ | done | `feat.tasks`, `org.engineering_stack` | `task.repo_access`: [Markdown](https://github.com/arghya05/hobasa-data-science-agent/blob/main/outputs/FEAT-ZD-48600/task.repo_access.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-science-agent/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.html) · [PDF](https://github.com/arghya05/hobasa-data-science-agent/blob/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.pdf) | [step record](https://github.com/arghya05/hobasa-data-science-agent/blob/main/steps/FEAT-ZD-48600/DS-01/README.md) |
+<!-- work:FEAT-ZD-48600:end -->

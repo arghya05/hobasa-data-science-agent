@@ -1,5 +1,6 @@
 {
   "failures": [
-    "G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session"
+    "G1 judge found an unsupported statement: \"| Agent's allowed git actions | Branch, commit and PR only. No merge, deploy, push to protected `main`, or oracle edit; the spine runs pushes | record:brief |\" (The citation does not support the statement. The step brief only says the spine commits and pushes after evaluation and approval. It says nothing about branch, )",
+    "G1 judge found an unsupported statement: \"| Existing modules the lane builds on | `predict.py` (`predict_delay_days`), `explain.py` (`build_explanation_request`), `models.json`; tests in `tests/test_for\" (The citation does not support part of the statement. `__init__.py` imports `.predict` and `.explain`, which supports those two modules. Neither `__init__.py` no)"
   ]
 }

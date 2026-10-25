@@ -26,6 +26,7 @@
 - `ap-forecast-sample/.git/refs/heads/dev`
 - `ap-forecast-sample/.git/refs/heads/main`
 - `ap-forecast-sample/CLAUDE.md`
+- `ap-forecast-sample/README.md`
 - `ap-forecast-sample/ci.py`
 - `ap-forecast-sample/src/ap_forecast/__init__.py`
 - `ap-forecast-sample/src/ap_forecast/explain.py`
@@ -46,7 +47,8 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
+G1 judge found an unsupported statement: "| Agent's allowed git actions | Branch, commit and PR only. No merge, deploy, push to protected `main`, or oracle edit; the spine runs pushes | record:brief |" (The citation does not support the statement. The step brief only says the spine commits and pushes after evaluation and approval. It says nothing about branch, )
+G1 judge found an unsupported statement: "| Existing modules the lane builds on | `predict.py` (`predict_delay_days`), `explain.py` (`build_explanation_request`), `models.json`; tests in `tests/test_for" (The citation does not support part of the statement. `__init__.py` imports `.predict` and `.explain`, which supports those two modules. Neither `__init__.py` no)
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-01: Checking the coding prerequisites ⁶ (attempt 2) for FEAT-ZD-48600
@@ -58,15 +60,15 @@ G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read 
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md` (from final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit b6a392f)
+- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 76d03ce)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.repo_access (Repository (and Databricks) availability and write access): write `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
 
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo-access)
 Repository ap_forecast (Python 3.9 (standard library)) is available locally; branch feature/story created from dev at d67e866; the agent identity has write access (git status clean). No Databricks or other workspace is used by this repository.

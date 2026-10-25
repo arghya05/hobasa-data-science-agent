@@ -1,52 +1,60 @@
-# DS-01 Checking the coding prerequisites ⁶ (Data Science agent)
+# DS-01 · Checking the coding prerequisites ⁶
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Task creation, or any re-entry trigger ¹  
-**Action:** Check for repo availability, repo creation and write access for the same  
-**Outcome expected:** Repo is available with write access
+**Agent:** Data Science · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** automated checks and the independent judge
 
-## Inputs (what the agent was given)
+**What this step does:** Check for repo availability, repo creation and write access for the same
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** Repo is available with write access
+
+**Started by:** Task creation, or any re-entry trigger ¹
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md | final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.engineering_stack | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | b6a392f | source |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `org.engineering_stack` | Repositories, languages, versions and exact commands | organisation source | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md) · [original](https://github.com/arghya05/hobasa-agentic-sdlc/blob/main/org/org.engineering_stack.md) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.repo_access | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.repo_access` | Repository (and Databricks) availability and write access | [Markdown](https://github.com/arghya05/hobasa-data-science-agent/blob/main/outputs/FEAT-ZD-48600/task.repo_access.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-science-agent/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.html) · [PDF](https://github.com/arghya05/hobasa-data-science-agent/blob/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.pdf) |
 
-## Code
-
-Repository `ap-forecast-sample`, branch `feature/story`, commit `d67e866`
+**Code:** repository [ap-forecast-sample](https://github.com/arghya05/ap-forecast-sample) · branch [feature/story](https://github.com/arghya05/ap-forecast-sample/tree/feature/story) · commit [d67e866](https://github.com/arghya05/ap-forecast-sample/commit/d67e866)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 2 | 2 | {'correct': 4, 'complete': 5, 'grounded': 4, 'useful': 5} |
+| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 4} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- The output takes 'Created from `dev`' from tool:repo-access, but the reflog it also cites (file:ap_forecast/.git/logs/refs/heads/feature/story) only says 'branch: Created from HEAD'. Since `dev` and `main` both point to d67e8662…, the source alone can't tell which one the branch came from. Cite only tool:repo-access for the base, or note that the reflog can't separate the two.
+- Write access rests only on the spine tool view ('write access confirmed'). The output could say that this means the local identity and git status. It does not prove push rights to the `origin` remote `arghya05/ap-forecast-sample`, which the spine uses when it pushes later.
+- RA-2's interim handling says 'DS-06 or DS-07' but cites no source. The data-science-steps SKILL.md defines these steps as DS-06 Unit Test Cases and DS-07 Commit & Push, so add it as a source.
+- Section 5 could also list the `models.json` file that TSK-03 and TSK-04 must not change. It was not confirmed to exist in the repository because it was not read, so mark it as unverified.
+
 ## How the agent worked
 
-- Approach: I read the two contracted inputs. feat.tasks gives the Data Science lane's tasks and its repository. org.engineering_stack gives the language, CI command, branch rules and whether Databricks is used. Shell commands are blocked in DS-01 by the G9 hook, so availability, the branch's origin and write access come from the spine's repo-access tool view. I checked that view against the git files in the checkout: HEAD, refs/heads/main, refs/heads/dev, the feature/story reflog and .git/config. To describe the starting point for TSK-03 and TSK-04, I read ci.py, src/ap_forecast/__init__.py, predict.py, explain.py and tests/test_forecast.py in full, and the repository's CLAUDE.md. Every file cited in the output was read in this session. I then wrote task.repo_access in full. I used no connector, because the inputs and the checkout held every fact needed.
-- Tools used: Skill (data-science-steps), Read, Glob, Grep, Write
-- Helper subagents: none
-- Connector calls: none
+- **Approach:** I followed the data-science-steps DS-01 procedure. I read both inputs: feat.tasks, to find the lane's repository and tasks, and org.engineering_stack, for the stack, CI and Databricks facts. Shell commands are not permitted in this step, so I checked the repository by reading its git metadata (HEAD, branch refs, reflog, config) and source files (ci.py, __init__.py, predict.py, explain.py, tests/test_forecast.py, README, CLAUDE.md) with Read and Glob. The tool:repo-access view is the source for availability, write access and the clean working tree. Every statement about existing code cites the file that shows it. I removed the statement about the agent's allowed git actions, because the brief does not support it.
+- **Tools used:** Skill:data-science-steps, Read, Glob, Write
+- **Helper subagents:** none
+- **Connector calls:** none
 
-## Attempts (checks before any person saw the output)
+## Files in this folder (audit trail)
 
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 1 | — | — |
-| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 5} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- Section 4 item 2 says 'DS-01 may not run shell commands under its tool policy' with no source. It is true (the spine hook G9 blocks shell for DS-01), but the sentence should cite the hook response or tool policy, as the DS-07 output does.
-- Section 2 'Push' row says 'the spine sets it on first push'. The source (.git/config) only shows that no upstream exists for feature/story. How the spine pushes is an inference; mark it as an assumption or cite CLAUDE.md ('the spine commits and pushes').
-- The Remote row could give the full origin URL from .git/config (https://github.com/arghya05/ap-forecast-sample.git) instead of only the name 'ap-forecast-sample', so the GitHub location is unambiguous.
-- The claim that risk.py does not exist yet could also cite the file listing of src/ap_forecast/. It holds: the directory has only __init__.py, explain.py, predict.py and models.json.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved

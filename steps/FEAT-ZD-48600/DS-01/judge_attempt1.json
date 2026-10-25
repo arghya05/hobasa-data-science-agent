@@ -1,0 +1,25 @@
+{
+  "unsupported": [
+    {
+      "text": "| Agent's allowed git actions | Branch, commit and PR only. No merge, deploy, push to protected `main`, or oracle edit; the spine runs pushes | record:brief |",
+      "why": "The citation does not support the statement. The step brief only says the spine commits and pushes after evaluation and approval. It says nothing about branch, commit or PR permissions, merge, deploy, protected main, or oracle edits. These limits appear to come from the agent's own definition (plugin agents/data-science.md:43, which says 'Branch, commit, PR and defect status only; no merge, deploy, protected-main push or oracle edits'). That file is not a listed source, and record:brief is the wrong citation. The row also leaves out 'defect status'."
+    },
+    {
+      "text": "| Existing modules the lane builds on | `predict.py` (`predict_delay_days`), `explain.py` (`build_explanation_request`), `models.json`; tests in `tests/test_forecast.py` | file:ap_forecast/src/ap_forecast/__init__.py; tool:repo-access |",
+      "why": "The citation does not support part of the statement. `__init__.py` imports `.predict` and `.explain`, which supports those two modules. Neither `__init__.py` nor the tool view (tool:repo-access) mentions `models.json` or `tests/test_forecast.py`. Only feat.tasks names them (TSK-03 'Must not change ... models.json'; TSK-04 files in budget `tests/test_forecast.py`), and feat.tasks is not cited on this row. The files do exist in the checkout, so this is a citation error, not a false fact."
+    }
+  ],
+  "improvements": [
+    "Fix the two citation errors. Cite feat.tasks (TSK-03, TSK-04) for `models.json` and `tests/test_forecast.py`. Cite the agent's own conventions, or drop the 'Agent's allowed git actions' row: it does not bear on repository availability.",
+    "Section 5 says 'Both files exist' and 'The parent folders ... exist' but cites feat.tasks and tool:repo-access. Neither lists files directly. Reading or globbing `src/ap_forecast/` and `tests/` (allowed under 'read any other file in the GitHub checkouts') would back these with a file citation. file:ap_forecast/CLAUDE.md ('Code: src/ap_forecast/; tests: tests/') already supports the folders and could be cited.",
+    "Write access rests only on the spine's tool view. The output could say plainly that it did not test write access itself (for example, push rights to the remote `arghya05/ap-forecast-sample`). Only local branch creation and a clean working tree are evidenced.",
+    "RA-2 (whether the `coverage` package is installed for /usr/bin/python3) is a useful catch. Name the owner and the step where it must be confirmed: DS-06 is the unit-test step with the 90% coverage target, and DS-07 is commit and push."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 5,
+    "grounded": 4,
+    "useful": 5
+  },
+  "notes": "The output meets the workbook outcome: ap_forecast is available, branch feature/story was created from dev at d67e866, and write access is confirmed. All of this matches the tool view and the spine's recorded tool result. I checked the facts against the files the agent read, and they hold:\n- .git/HEAD is refs/heads/feature/story.\n- dev and main both point to d67e8662\u2026\n- The reflog shows the branch was created at d67e866.\n- The origin remote is github.com/arghya05/ap-forecast-sample.\n- `__version__` is \"0.9.0\", matching feat.tasks.\n- ci.py imports `coverage`, sets COVERAGE_MIN = 90.0 and runs static checks in place of SonarQube.\n- org.engineering_stack says no repository uses Databricks or a database.\n- The lane tasks TSK-03 and TSK-04 and their files in budget match feat.tasks.\n- predict.py, explain.py, models.json and tests/test_forecast.py exist in the checkout.\n\nThe only problems are two citation errors. The 'allowed git actions' row cites record:brief, but its content comes from the agent definition. The 'existing modules' row cites `__init__.py` and the tool view for files that only feat.tasks names. No numbers, dates or tool results are invented. The non-blocking observations RA-1 and RA-2 are properly framed."
+}
