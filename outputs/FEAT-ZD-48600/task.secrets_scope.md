@@ -1,64 +1,56 @@
-# task.secrets_scope: FEAT-ZD-48600 (Data Science lane, ap_forecast)
+# task.secrets_scope: FEAT-ZD-48600
 
-DS-02 Access to secrets (attempt 1). This step checks which secrets the Data Science tasks need in each environment, compares them with the permission table and asks for access where needed. Only secret **names** belong in this file. No values appear here.
+Secrets check for the Data Science lane of FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is DS-02 Access to secrets. The workbook action is to check access to the secrets the tasks need and to ask for access where needed. This file lists secret names only. It holds no secret values.
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | DS-02 Access to secrets (attempt 1) | record:brief |
-| Owner / gate | Developer / automated checks, independent judge, sampled human evaluation | record:brief |
-| Inputs | feat.tasks (commit b0fd4d2, produced by DES-04); org.permission_table (restricted, by reference through tool:repo-access) | record:brief; feat.tasks |
-| Repository | ap_forecast, branch `feature/story` | feat.tasks (section 1, section 2); file:ap_forecast/CLAUDE.md |
+| Step | DS-02 Access to secrets | record:brief |
+| Owner / gate | Developer / no gate: automated checks, the independent judge and sampled human evaluation | record:brief |
+| Inputs | feat.tasks (b0fd4d2); org.permission_table (restricted, passed by reference only; read through the tool view) | record:brief |
+| Lane tasks | TSK-03 (STORY-03, `risk.vendor_risk`) and TSK-04 (STORY-04, `explain.build_explanation_request(..., risk=None)`), both in `ap_forecast` | feat.tasks (sections 1, 3) |
 
-## 1. Data Science tasks in scope
+## 1. Result
 
-| Task | Story | What the code does | External call at run time? | Source |
-|---|---|---|---|---|
-| TSK-03 | STORY-03 | New `risk.vendor_risk(history)`: rule-based level from `predict_delay_days`. No LLM, no network, no `models.json` read | No | feat.tasks (TSK-03) |
-| TSK-04 | STORY-04 | Adds `risk=None` to `explain.build_explanation_request`. The function only **builds** a request dict (provider, model, `max_tokens`, messages) from `config or load_config()` | No. The function sends nothing. Nothing new calls it with `risk`, and it is not part of the end-to-end wiring | feat.tasks (TSK-04); file:ap_forecast/src/ap_forecast/explain.py |
-
-Both tasks use only the Python 3.9 standard library, with no new technology (feat.tasks, preamble, DD-1). CI is the local command `/usr/bin/python3 ci.py`: compile, unit tests, `coverage` and AST static checks. It needs no credentials (file:ap_forecast/ci.py; file:ap_forecast/CLAUDE.md).
-
-## 2. Code check: secret references in ap_forecast
-
-I searched the whole checkout, excluding `.git`, case-insensitively for `environ`, `getenv`, `api_key`, `API_KEY`, `token`, `secret` and `password`.
-
-| Finding | Meaning | Source |
-|---|---|---|
-| `explain.py` line 15 and `models.json` line 4 match `max_tokens` | A model setting, not a credential | file:ap_forecast/src/ap_forecast/explain.py; file:ap_forecast/src/ap_forecast/models.json |
-| `tests/test_forecast.py` lines 18–19 match `max_tokens` | The test passes an explicit config; no credential | file:ap_forecast/tests/test_forecast.py |
-| No environment-variable reads, API keys, tokens or passwords | The code has no secret dependency today | file:ap_forecast/src/ap_forecast/explain.py; file:ap_forecast/ci.py |
-
-`models.json` names provider `acme-llm` and model `acme-text-2`. It holds no key, and the repository has no code that calls the provider (file:ap_forecast/src/ap_forecast/models.json; file:ap_forecast/src/ap_forecast/explain.py).
-
-## 3. Secrets scope (names only)
-
-| Environment | Secrets required by TSK-03 / TSK-04 | Granted (permission table) | Gap / access request |
-|---|---|---|---|
-| Local development and unit tests | None | None | None |
-| CI (`ci.py`) | None | None | None |
-| dev (integration branch) | None | None | None |
-| main (released) | None | None | None |
-
-The permission table grants no secrets for ap_forecast and says none are required (tool:repo-access). This matches sections 1 and 2, so the required set and the granted set are both empty. **No access request is raised.** No excess access needs revoking.
-
-## 4. Outcome
-
-Secrets are available with the right permissions: the tasks need none, and none are granted. TSK-03 and TSK-04 can go on to DS-03 and DS-04 without any secrets prerequisite (tool:repo-access; feat.tasks).
-
-## 5. Open questions (non-blocking)
-
-| ID | Question | Interim answer | Owner (proposed) |
-|---|---|---|---|
-| SSQ-1 | If an `acme-llm` request is ever sent at run time, which runtime owns the provider credential and its permission-table entry? TSK-04 only builds the request. Sending the risk label to `acme-llm` waits on Architect confirmation (TQ-8), which gates release, not coding | Out of scope for this task: ap_forecast does not send the request, so it holds no credential | Architect / Shared services |
-
-## 6. Validation check
+**The Data Science tasks need no secrets, and none are granted. No access request is needed. The secrets scope is empty.**
 
 | Check | Result | Source |
 |---|---|---|
-| Every DS task in feat.tasks considered (TSK-03, TSK-04) | Pass | feat.tasks (section 1) |
-| Required secrets compared with the permission table | Pass: both sets are empty | tool:repo-access |
-| No secret values or personal data in this file | Pass: no names to list | — |
+| Secrets granted for `ap_forecast` | None. The permission table grants no secrets for this repository | tool:repo-access |
+| Secrets required by `ap_forecast` | None. The permission table requires no secrets for this repository | tool:repo-access |
+| TSK-03 needs a secret | No. `vendor_risk` uses no LLM, makes no network call and does not read `models.json`. It calls only `predict_delay_days`, which computes from the history in memory | feat.tasks (TSK-03); journey:feat.clarifications (CL-DS4); file:ap_forecast/src/ap_forecast/predict.py |
+| TSK-04 needs a secret | No. `build_explanation_request` builds and returns a request dict with `provider`, `model`, `max_tokens` and `messages`. It does not send the request, so it needs no provider credential. The provider and model come from `models.json` (`acme-llm`, `acme-text-2`) and stay unchanged | feat.tasks (TSK-04); journey:feat.clarifications (CL-DS8); file:ap_forecast/src/ap_forecast/explain.py; file:ap_forecast/src/ap_forecast/models.json |
+| Secrets read by today's code | None. A search of the repository for secret, key, token, credential, password and environment-variable access matched only the `max_tokens` setting and the tests that check it | file:ap_forecast/src/ap_forecast/explain.py; file:ap_forecast/src/ap_forecast/models.json; file:ap_forecast/tests/test_forecast.py |
+| CI command | `/usr/bin/python3 ci.py`, run in the repository | file:ap_forecast/README.md; file:ap_forecast/CLAUDE.md |
+| Secrets for CI | None. `ci.py` compiles the sources, runs the unit tests with a coverage gate and runs static checks. It reads no secret, credential or environment variable | file:ap_forecast/ci.py |
+| Secrets for the existing tests | None. The tests build requests from `models.json` or from an explicit config dict, with no credential | file:ap_forecast/tests/test_forecast.py |
+| Test data | Synthetic only, with no secrets or personal data | journey:feat.clarifications (CL-X9) |
+| Secrets added by the design | None added. Tests and examples use synthetic data | journey:feat.design (SE-4) |
+| External data flow | With `risk`, the explanation prompt also carries the vendor's risk label to the configured provider (`acme-llm`). The Architect must confirm this (TQ-8). That changes what the prompt says, not which secrets the lane needs | journey:feat.design (SE-3); journey:feat.clarifications (CL-DS8); feat.tasks (TSK-04) |
+
+## 2. Secrets scope (names only)
+
+| Secret name | Environment | Needed by | Granted | Access request |
+|---|---|---|---|---|
+| — (none) | — | — | — | Not needed |
+
+Source: tool:repo-access; feat.tasks (TSK-03, TSK-04).
+
+## 3. Open questions (none blocking)
+
+| ID | Question | Interim answer | Owner (proposed) |
+|---|---|---|---|
+| SSQ-1 | `explain.py` only builds the request for `acme-llm`. Whatever sends it would need the provider credential, and no input names that sender. Please confirm that credential is outside this lane's scope | Neither TSK-03 nor TSK-04 sends a request, and the design adds no secrets. Sending the risk label to `acme-llm` stays with the Architect (TQ-8) and gates release, not coding | Architect |
+| SSQ-2 | The permission table is restricted. This step read it only through the tool view, which answers per repository, not per environment. Please confirm that no environment grants or requires a secret for `ap_forecast` | Use the tool view's statement as given: no secrets are required or granted for this repository | Developer / shared services |
+
+## 4. Validation check
+
+| Check | Result | Source |
+|---|---|---|
+| Every lane task checked for secret needs | Pass (TSK-03, TSK-04) | feat.tasks (section 1) |
+| Required secrets available with access | Pass. None are required | tool:repo-access |
+| Access requests raised | None needed | tool:repo-access |
+| Secret values or personal data in this file | None | — |
 | Blocking questions | None | — |
 
 

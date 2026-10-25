@@ -9,16 +9,34 @@
 ## Inputs the agent was given
 - feat.tasks: `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-02/feat.tasks.md`
 
+## Tool results the spine recorded from the real tools in this step (a valid source; the section 'Tool results' at the end of an output file is written by the spine, not the agent)
+
+
+[Tool result] [ap_forecast] Tool registry: no secrets required or granted (permission table)
+
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-205213-feat-zd-48600-workspace-ap-forecast/d81352e5-6686-41f3-a996-987b8e95d5ac/tool-results/hook-47319310-6ed6-408f-ae04-81170dd2e400-1-additionalContext.txt`
+- `hobasa-data-science-agent/.claude/skills/data-science-steps/SKILL.md`
+- `hobasa-data-science-agent/CLAUDE.md`
 - `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
 - `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md`
+- `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.clarifications.md`
+- `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md`
+- `ap-aging-sample/CLAUDE.md`
 - `ap-forecast-sample/CLAUDE.md`
+- `ap-forecast-sample/README.md`
 - `ap-forecast-sample/ci.py`
-- `ap-forecast-sample/src/ap_forecast/__init__.py`
 - `ap-forecast-sample/src/ap_forecast/explain.py`
 - `ap-forecast-sample/src/ap_forecast/models.json`
 - `ap-forecast-sample/src/ap_forecast/predict.py`
 - `ap-forecast-sample/tests/test_forecast.py`
+- `ap-pipeline-sample/CLAUDE.md`
+- `ap-portal-sample/CLAUDE.md`
+- `hobasa-agentic-sdlc/CLAUDE.md`
+- `hobasa-agentic-sdlc/features/FEAT-ZD-48600/JOURNEY.md`
+- `hobasa-agentic-sdlc/memory/MEMORY.md`
+- `final_document/hobasa-claude-code-plugin/skills/data-science-steps/SKILL.md`
+- `final_document/hobasa-claude-code-plugin/skills/grounded-output/SKILL.md`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
@@ -27,7 +45,7 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session
+G1 judge found an unsupported statement: "CI runs locally with `/usr/bin/python3 ci.py` (compile, unit tests, coverage, static checks). ... | file:ap_forecast/ci.py; file:ap_forecast/tests/test_forecast" (None of the three cited sources gives the command `/usr/bin/python3 ci.py`. ci.py has no interpreter path, and test_forecast.py and CL-X9 say nothing about CI. )
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-02: Access to secrets (attempt 3) for FEAT-ZD-48600
@@ -47,9 +65,9 @@ G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in 
 
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo-access)
 Tool registry for ap_forecast: no secrets are required or granted for this repository (permission table).
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.

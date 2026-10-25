@@ -1,0 +1,20 @@
+{
+  "unsupported": [
+    {
+      "text": "CI runs locally with `/usr/bin/python3 ci.py` (compile, unit tests, coverage, static checks). ... | file:ap_forecast/ci.py; file:ap_forecast/tests/test_forecast.py; journey:feat.clarifications (CL-X9)",
+      "why": "None of the three cited sources gives the command `/usr/bin/python3 ci.py`. ci.py has no interpreter path, and test_forecast.py and CL-X9 say nothing about CI. The command is in file:ap_forecast/CLAUDE.md line 5 and file:ap_forecast/README.md line 3. The agent read both files but did not cite them on this row. The fact is true, but the citation attached to it does not support it."
+    }
+  ],
+  "improvements": [
+    "Section 1, 'Secrets for tests and CI' row: add file:ap_forecast/CLAUDE.md or file:ap_forecast/README.md as the source for the `/usr/bin/python3 ci.py` command.",
+    "Section 2 lists the environment as '\u2014'. The workbook outcome asks for secrets per environment, and SSQ-2 says the tool view answers per repository. That gap is a non-blocking question, so the gate should check that it is acceptable for the outcome 'Secrets are available with access permissions'.",
+    "SSQ-1 (who holds the acme-llm credential for the sender) is worth sending to shared services as well as the Architect, since credentials are their concern."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 5
+  },
+  "notes": "Checked against the sources:\n- Tool view: no secrets required or granted for ap_forecast. This matches section 1 and section 2.\n- feat.tasks: TSK-03 and TSK-04 are the Data Science / ap_forecast tasks.\n- Code: explain.py builds and returns a dict with provider, model, max_tokens and messages, and never sends it. predict.py works in memory only. models.json holds acme-llm, acme-text-2 and 300.\n- Secret search: I searched the ap_forecast repo for secret, key, token, credential, password, environ and getenv. It matches only max_tokens, in explain.py, models.json and test_forecast.py lines 18-19. That confirms the output's claim.\n- ci.py: covers compile, unit tests, coverage of at least 90% and static checks.\n- test_forecast.py: tests use either an explicit config or models.json.\n- feat.clarifications: CL-DS4, CL-DS8 and CL-X9 match what the output cites them for.\n- feat.design: SE-3 (risk label sent to acme-llm, TQ-8) and SE-4 (no secrets added, synthetic data) match.\n\nThe fixes asked for in the refusal are in place: every file cited now appears in the read list. The only grounding gap is the CI command row, where the attached citation does not support the statement. The conclusion (no secrets needed, none granted, no access request) is correct and grounded."
+}
