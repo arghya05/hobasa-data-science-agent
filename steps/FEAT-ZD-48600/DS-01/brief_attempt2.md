@@ -1,8 +1,7 @@
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "| Agent's allowed git actions | Branch, commit and PR only. No merge, deploy, push to protected `main`, or oracle edit; the spine runs pushes | record:brief |" (The citation does not support the statement. The step brief only says the spine commits and pushes after evaluation and approval. It says nothing about branch, )
-G1 judge found an unsupported statement: "| Existing modules the lane builds on | `predict.py` (`predict_delay_days`), `explain.py` (`build_explanation_request`), `models.json`; tests in `tests/test_for" (The citation does not support part of the statement. `__init__.py` imports `.predict` and `.explain`, which supports those two modules. Neither `__init__.py` no)
+G1 judge found an unsupported statement: "| Agent actions | Branch, commit, PR and defect status only. No merge, deploy, push to protected `main` or oracle edits | record:brief |" (The citation doesn't support the statement. The DS-01 step brief (record:brief) says nothing about permitted agent actions, merge, deploy, protected main or ora)
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-01: Checking the coding prerequisites ⁶ (attempt 2) for FEAT-ZD-48600
@@ -15,7 +14,7 @@ G1 judge found an unsupported statement: "| Existing modules the lane builds on 
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
 - feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 76d03ce)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit e8afce8)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.repo_access (Repository (and Databricks) availability and write access): write `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
@@ -27,4 +26,4 @@ Decide the best way to do this step from the inputs and the workbook action, pla
 ## Tool view (cite as tool:repo-access)
 Repository ap_forecast (Python 3.9 (standard library)) is available locally; branch feature/story created from dev at d67e866; the agent identity has write access (git status clean). No Databricks or other workspace is used by this repository.
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.
