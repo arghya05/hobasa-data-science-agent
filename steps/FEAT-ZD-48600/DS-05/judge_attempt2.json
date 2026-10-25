@@ -1,0 +1,31 @@
+{
+  "unsupported": [
+    {
+      "text": "| `build_explanation_request` | `src/ap_forecast/__init__.py` | `tests/test_forecast.py` | mcp:codegraph | ... | `vendor_risk` (new) | `src/ap_forecast/__init__.py` | None found (\"no covering tests found\") | mcp:codegraph |",
+      "why": "The section 4 blast-radius table cites mcp:codegraph and quotes a CodeGraph result word for word (\"no covering tests found\"). The spine recorded only one tool result for this step, '[ap_forecast] Sources compile'. No CodeGraph response appears in the brief or in any file the agent read. The previous attempt was refused (G2) for citing mcp:codegraph without using it, and nothing recorded in this step shows the connector was queried. The callers and tests listed can be worked out from tool:repo, but the citation and the quoted tool output have no recorded source."
+    },
+    {
+      "text": "`codegraph affected` on the three changed source files reported no affected test files.",
+      "why": "This states the output of a shell command, but no recorded tool view or file contains it. The spine's tool results hold only 'Sources compile'."
+    },
+    {
+      "text": "The full current source of the three changed modules is in the tool view (tool:repo) and in mcp:codegraph. / No existing test calls `vendor_risk` or passes `risk` (tool:repo; mcp:codegraph).",
+      "why": "mcp:codegraph is cited again, with no recorded CodeGraph response in this step. tool:repo alone supports both statements, so the mcp:codegraph part of the citation is unsupported."
+    }
+  ],
+  "improvements": [
+    "Section 5 cites its test, static-check and coverage results as \"`ci.py` run in this step\". That is not a valid source form, and the spine recorded only 'Sources compile'. The results agree with what tool:repo and ci.py imply: no test calls vendor_risk or passes risk, which leaves 7 uncovered statements of 32, about 78%, below COVERAGE_MIN 90.0. Still, they should cite a recorded tool:ci view, or the run's JSON should be recorded so the gate can see it.",
+    "DSQ-2 is a real conflict between two brief instructions: 'run the CI until it passes', and changing only src/ap_forecast/, docs/ and README.md, which excludes tests/. The conventions say anything contradictory must become a BLOCKING question to its owner. The output files it as non-blocking with the interim answer 'Tests left to DS-06'. It should be BLOCKING for the Developer.",
+    "The workbook outcome is an updated repo with the implemented code. The source and docs are done, but CI does not pass, so the step is not fully complete. Say plainly that DS-05 cannot meet the CI gate under its path restrictions, and name who must decide.",
+    "'0.10.0' is written into __init__.py and into docs/ap_forecast.md ('new in 0.10.0', 'changed in 0.10.0'). It is correctly marked as a proposal (DSQ-1), but the docs repeat it as fact. If the Developer chooses another number, both files must change. Note this in DSQ-1.",
+    "'Only allowed paths changed ... (`git status`)' cites record:brief, but no git status output is recorded. The file timestamps are consistent with the claim. Record or cite the actual status output.",
+    "The workbook action includes secrets access in all environments. The output carries SSQ-2 forward as non-blocking. Consider stating explicitly that the task.secrets_scope reference was not opened, because it is restricted."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 3,
+    "grounded": 3,
+    "useful": 4
+  },
+  "notes": "I checked the output against all five inputs, the brief's tool view, the ap_forecast checkout (risk.py, explain.py, __init__.py, README.md, docs/ap_forecast.md, ci.py, CLAUDE.md, .git/HEAD showing feature/story) and the CodeGraph daemon log.\n\nThe code matches the plan:\n- The code shown in the output matches the tool view exactly.\n- The design rules trace correctly to feat.design (DD-9, B2.2, B2.4, DD-11), feat.stories (AC-03.x, AC-04.x) and task.components (C-1 to C-5, DSQ-1).\n- The docs and README exist and match what the output says about them: synthetic vendor names, signatures, examples.\n\nThe CI reasoning is sound. By statement count, the new code leaves 7 of 32 statements uncovered, about 78.1%, below the 90.0 gate. These are the same figures the previous attempt reported. The output honestly reports that CI does not pass.\n\nWhat blocks it is the citations. It cites mcp:codegraph three times, including a word-for-word quote of a tool result, and states a `codegraph affected` result. None of these has a recorded tool response: the spine recorded only 'Sources compile'. The same issue (G2) caused the previous refusal. The daemon log shows a CodeGraph MCP server auto-syncing files but no recorded queries.\n\nThe previous refusal's G3 number issues are gone from the output text."
+}

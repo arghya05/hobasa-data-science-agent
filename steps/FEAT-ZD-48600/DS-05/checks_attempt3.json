@@ -1,7 +1,8 @@
 {
   "failures": [
-    "G1 judge found an unsupported statement: \"Coverage gate (`COVERAGE_MIN = 90.0`) | **FAIL.** The CI run measured 83.3% total. (section 3 table, cited \"CI run; file:ap_forecast/ci.py\")\" (83.3 does not appear in any source the agent can cite. file:ap_forecast/ci.py defines only COVERAGE_MIN = 90.0. tool:repo has no CI output, and the only tool re)",
-    "G1 judge found an unsupported statement: \"`__init__.py` and `predict.py` are fully covered. (section 3, Coverage row)\" (This is a per-file coverage result attributed to \"CI run\". No tool view or cited file contains a coverage report, so the per-file figures have no supporting sou)",
-    "G1 judge found an unsupported statement: \"Overall `passed` | `false` (coverage only) | CI run\" (This is a CI result cited only to \"CI run\". No tool view records the CI JSON output (passed, failures, errors, coverage), so it differs from what the tool views)"
+    "G1 judge found an unsupported statement: \"Compile, the static checks and the existing tests pass. CI does not pass yet: line coverage of `src/ap_forecast` is below the 90.0 gate.\" (The only tool result the spine recorded for this step is \"[ap_forecast] Sources compile\". No recorded tool view holds a unit-test, static-check or coverage resu)",
+    "G1 judge found an unsupported statement: \"| Existing unit tests (`tests/test_forecast.py`) | Pass: no failures, no errors | The existing calls are unchanged (section 4) |\" (This is a test result from \"the run in this step\", but no recorded tool result contains it. The spine recorded only 'Sources compile'.)",
+    "G1 judge found an unsupported statement: \"| Static checks (`print` / `eval` / `exec`, bare `except`, lines over 140 characters) | Pass: no issues |\" (This is a CI static-check result that appears in no recorded tool result. Reading the code makes it plausible, but the output presents it as the outcome of a CI)",
+    "G1 judge found an unsupported statement: \"| Coverage of `src/ap_forecast` (gate `COVERAGE_MIN = 90.0`) | **Fail: below the gate** | ... | Overall | **Not passed** | Coverage gate only |\" (This is a coverage and overall CI result that the spine did not record (the tool results hold only 'Sources compile'). The 90.0 gate is in ci.py, but the claim )"
   ]
 }

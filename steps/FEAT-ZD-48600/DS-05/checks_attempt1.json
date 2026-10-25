@@ -1,6 +1,7 @@
 {
   "failures": [
-    "G3 numbers ['0.10'] in \"__init__.py exports vendor_risk in __all__ and the package version moves from 0.9.0 to 0.10.0 as a m\" do not appear in task.components; feat.design; tool:repo",
-    "G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session"
+    "G3 numbers ['0.10'] in \"__init__.py imports vendor_risk and adds it to __all__ while keeping the existing exports. The versi\" do not appear in task.components; feat.design; tool:repo",
+    "G2 claim cites mcp:codegraph but that connector was not used in this session",
+    "G3 numbers ['78.1', '32', '7', '22', '27', '21'] in \"The CI run passed compile and static checks and ran 3 tests with 0 failures and 0 errors. Coverage w\" do not appear in tool:ci; file:ap_forecast/ci.py"
   ]
 }

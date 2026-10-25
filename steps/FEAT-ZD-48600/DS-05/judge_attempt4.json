@@ -1,26 +1,18 @@
 {
-  "unsupported": [
-    {
-      "text": "CQ-DS5-1 | The CI run in this step did not pass the coverage gate (`COVERAGE_MIN = 90.0`); compile, the existing tests and static checks did pass. (section 7, open questions table)",
-      "why": "This is a CI result (gate failed on coverage; compile, existing tests and static checks passed) and no tool view or cited file records any CI output. file:ap_forecast/ci.py only defines the checks and COVERAGE_MIN = 90.0; tool:repo shows source code, not a run. The only tool-result text in the output is \"Sources compile\", which supports compile and nothing else. This is the same claim the previous refusal rejected (\"Overall passed | false (coverage only) | CI run\"), now stated as fact in the open-questions table. Putting it in a question row does not make it an assumption: the sentence states the outcome as fact, not as something to verify."
-    },
-    {
-      "text": "CI was run in this step. Its JSON result is not held in any view this output can cite (section 3)",
-      "why": "No tool view or cited source shows that `/usr/bin/python3 ci.py` was run in this step. The output itself says no citable view holds the result. The claim is made only to support the CQ-DS5-1 result statement above."
-    }
-  ],
+  "unsupported": [],
   "improvements": [
-    "Rephrase CQ-DS5-1 as something to verify, without reporting a CI outcome. For example: \"Code reading (tool:repo) shows the existing tests do not run the `vendor_risk` body or the `risk` append, so coverage is expected to be below COVERAGE_MIN = 90.0 until the CMP-4/CMP-5 tests exist; the spine's CI record is authoritative.\" Section 3 already supports this inference, so stating it as an expectation is grounded.",
-    "Remove the stray trailing lines \"[Tool result] [ap_forecast] Sources compile\" (they appear twice at the end of task.code.md). They are tool-output artifacts, not part of the document.",
-    "Section 4 cites \"data-science-steps skill, DS-06\", which is not one of the step's citable sources (inputs, tool:repo, file:, record:). Cite record:brief or the workbook instead. In substance the skill does support DS-06 writing unit tests to at least 90% coverage.",
-    "The CQ-DS5-1 interim answer \"DS-07 commits only after CI passes\" goes further than the DS-07 skill text, which says commit and push after unit-testing completion and does not mention a CI-pass condition. Mark it as an assumption.",
-    "The secrets row could state plainly that task.secrets_scope was not readable (restricted, by reference only), and that 'none needed' rests on task.components section 5 and the code, not on reading the scope."
+    "CI status is left unstated. The brief says to run `/usr/bin/python3 ci.py` until it passes, and the only recorded tool result is 'Sources compile'. Section 5 says only that 'The spine records the result'. The output should say plainly that the CI has not passed and that no test or coverage result is recorded for this step. That leaves the workbook outcome conditional. Section 5 itself shows why the gate cannot be met yet: no existing test runs the `vendor_risk` body or the `risk` prompt line.",
+    "DSQ-2 is not marked BLOCKING. The brief requires CI to pass but forbids changes to `tests/`, and ci.py fails below 90.0 coverage. That is a contradiction in the brief. CLAUDE.md says such a contradiction becomes a BLOCKING question to the owner, not a non-blocking item with an interim answer ('Tests left to DS-06').",
+    "Line 29 says `tests/` stays unchanged 'as planned' and cites task.components section 4. That section does not list `tests/` as unchanged: task.components plans C-4 and C-5 test changes, for DS-06. Only record:brief (the allowed paths) supports leaving tests alone in this step. The citation should name the source that actually supports each item.",
+    "task.components section 4 plans `README.md` as unchanged, but this step changes it because the brief requires it. The output should say openly that it departs from the DS-04 plan here and why (record:brief).",
+    "Section 7 carries only some of the open questions from task.components section 8. RAQ-1 to RAQ-3 and SSQ-1 are dropped without comment. Either carry them or say why they no longer apply.",
+    "Section 4 (blast radius) relies on the tool view only. The brief asked for `codegraph impact`, `codegraph callers` and `codegraph affected` after `codegraph sync`. The output does not say whether CodeGraph was run or which tests it reported as affected."
   ],
   "scores": {
-    "correct": 3,
-    "complete": 4,
-    "grounded": 3,
+    "correct": 4,
+    "complete": 3,
+    "grounded": 5,
     "useful": 4
   },
-  "notes": "The code changes match the tool view exactly: risk.py, explain.py and __init__.py all follow task.components CMP-1 to CMP-3 and feat.design B2.2/DD-9/DD-11. Version 0.9.0 \u2192 0.10.0, `risk` is the last parameter, strict `>` thresholds are 30/10, and risk.py does not import explain. README.md and docs/ap_forecast.md exist in the repo and are accurate; the README example (25, 40, 35) gives a mean of 33.3, which rounds to 33, so 'high' is correct. The descriptions of ci.py, the database and secrets rows, and the L-007/L-011 handling are all grounded. The remaining blocker is the same kind of issue as last time: the output again asserts a CI outcome (coverage gate failed; compile, tests and static checks passed) and an unrecorded CI run, now inside the CQ-DS5-1 open-question row instead of a table cell. The figure 83.3% was removed, but the statement that the run failed on coverage alone is still unsupported by any tool view."
+  "notes": "I checked every statement against the five inputs, the tool view, the recorded tool result ('Sources compile'), file:ap_forecast/ci.py, CLAUDE.md, README.md and docs/ap_forecast.md. I also read .git/HEAD, which confirms branch feature/story. Shell commands were blocked for this step, so I could not run git diff.\n\nThe four earlier refusal points are fixed. The output no longer states any test, static-check, coverage or overall CI result. It describes only what the code shows and leaves the result to the spine.\n\n**Matches the sources**\n- The code excerpts for risk.py, explain.py and __init__.py match the tool view.\n- The constants 30 and 10, version 0.10.0 (from 0.9.0) and COVERAGE_MIN 90.0 all appear in the cited sources.\n- The design-rule tables match feat.design (DD-9, B2.2, B2.4, NF-9, DC-4) and feat.stories AC-03.x and AC-04.x.\n- The blast-radius table matches tests/test_forecast.py.\n- The documentation description matches docs/ap_forecast.md and README.md.\n\n**One claim I could not check**\n'Coverage was not raised by any other means' is a statement about the agent's own process. It is consistent with the source (no pragmas; ci.py matches its DS-04 description) but cannot be verified without git diff.\n\n**Main quality gap**\nBy my count of the statements in the tool view, line coverage would be about 79%, below the 90.0 gate. So the CI cannot pass in this step, and the brief's 'until it passes' is unmet. The output raises this as DSQ-2 but treats it as non-blocking. It is not a hallucination, but the people at the gate should see it."
 }

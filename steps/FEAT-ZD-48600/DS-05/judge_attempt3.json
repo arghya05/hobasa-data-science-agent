@@ -1,24 +1,28 @@
 {
   "unsupported": [
     {
-      "text": "Coverage gate (`COVERAGE_MIN = 90.0`) | **FAIL.** The CI run measured 83.3% total. (section 3 table, cited \"CI run; file:ap_forecast/ci.py\")",
-      "why": "83.3 does not appear in any source the agent can cite. file:ap_forecast/ci.py defines only COVERAGE_MIN = 90.0. tool:repo has no CI output, and the only tool result attached to the output says \"Sources compile\". \"CI run\" is not an allowed citation type (input item, tool:repo, api:, mcp:, file:, record:). The previous attempt was refused on G3 for this same uncited number, and it is still here."
+      "text": "Compile, the static checks and the existing tests pass. CI does not pass yet: line coverage of `src/ap_forecast` is below the 90.0 gate.",
+      "why": "The only tool result the spine recorded for this step is \"[ap_forecast] Sources compile\". No recorded tool view holds a unit-test, static-check or coverage result, or an overall CI verdict. Only the compile part is supported."
     },
     {
-      "text": "`__init__.py` and `predict.py` are fully covered. (section 3, Coverage row)",
-      "why": "This is a per-file coverage result attributed to \"CI run\". No tool view or cited file contains a coverage report, so the per-file figures have no supporting source."
+      "text": "| Existing unit tests (`tests/test_forecast.py`) | Pass: no failures, no errors | The existing calls are unchanged (section 4) |",
+      "why": "This is a test result from \"the run in this step\", but no recorded tool result contains it. The spine recorded only 'Sources compile'."
     },
     {
-      "text": "Overall `passed` | `false` (coverage only) | CI run",
-      "why": "This is a CI result cited only to \"CI run\". No tool view records the CI JSON output (passed, failures, errors, coverage), so it differs from what the tool views show."
+      "text": "| Static checks (`print` / `eval` / `exec`, bare `except`, lines over 140 characters) | Pass: no issues |",
+      "why": "This is a CI static-check result that appears in no recorded tool result. Reading the code makes it plausible, but the output presents it as the outcome of a CI run, and that run is not recorded."
+    },
+    {
+      "text": "| Coverage of `src/ap_forecast` (gate `COVERAGE_MIN = 90.0`) | **Fail: below the gate** | ... | Overall | **Not passed** | Coverage gate only |",
+      "why": "This is a coverage and overall CI result that the spine did not record (the tool results hold only 'Sources compile'). The 90.0 gate is in ci.py, but the claim that this step's run measured coverage below it has no source. DSQ-2 repeats it: \"CI does not pass in this step because coverage is below the 90.0 gate.\""
     }
   ],
   "improvements": [
-    "Delete the CI figures that have no source (83.3%, per-file coverage, passed=false), or cite them to a real tool view of the CI JSON. If none exists, state the coverage result as a reasoned expectation and mark it to verify. For example: new lines in risk.py and explain.py are not exercised by the existing tests in tool:repo, so the 90.0 gate in ci.py is expected to fail until DS-06.",
-    "Replace \"CI run\" as a citation everywhere (sections 3 and 5) with an allowed source type. The Tests and Compile rows are partly backed by tool:repo (the three test names) and by the attached \"Sources compile\" tool result. Cite those instead.",
-    "Line 101 has a stray \"[Tool result] [ap_forecast] Sources compile\" trailing the document. Remove it, or fold it into the Compile row as a citation.",
-    "Section 1's git status statement has no citation. Cite it, or note that it is the agent's own observation from the allowed `git status` command.",
-    "Workbook outcome: the code is implemented and documented, but the repository CI gate does not pass in this step. CQ-DS5-1 correctly raises the step-scope conflict (tests/ is not writable). Keep it prominent so the gate reviewers decide the order."
+    "Record the CI run so the results in section 5 are grounded. Run `/usr/bin/python3 ci.py` and have the spine capture its JSON output (tests_run, failures, errors, coverage, static_issues, passed). Otherwise, present the coverage gap as an expected outcome derived from the tool view (no test calls `vendor_risk` or passes `risk`), not as the result of a run.",
+    "The brief says to run the CI \"until it passes\", but it also bars writing to `tests/`. The workbook outcome (an updated repo whose CI passes) is therefore not met. That conflict should be a BLOCKING question to the Developer. DSQ-2 is currently non-blocking with an interim answer.",
+    "task.components section 4 lists `README.md` as \"Unchanged; not in either task's file budget\". The output changes README.md because the brief asks for it, but never says that this departs from the approved plan. Record the deviation and why.",
+    "Section 3 says that `docs/ap_forecast.md` gives every function \"signature, inputs, outputs, edge cases and examples\". `load_config` has only a signature and a one-line description, with no example and no edge cases. Either make the claim more precise or complete the entry.",
+    "The section 1 table row 'Unchanged, as planned: ... tests/ (task.components section 4; record:brief)' cites task.components section 4, which does not cover tests/. Plans C-4 and C-5 do change tests/, in DS-06. Cite the task.components header ('plan for DS-05 (coding) and DS-06 (unit tests)') instead."
   ],
   "scores": {
     "correct": 4,
@@ -26,5 +30,5 @@
     "grounded": 3,
     "useful": 4
   },
-  "notes": "I checked the code claims against tool:repo, and they match. risk.py has HIGH_ABOVE_DAYS=30 and MEDIUM_ABOVE_DAYS=10, uses strict >, and does not import explain. explain.py has risk=None last, with the guarded append. __init__ exports vendor_risk and has __version__ 0.10.0, where task.components records 0.9.0. docs/ap_forecast.md and README.md exist with the content described. Design and story IDs (B2.2, DD-9, DD-11, DD-1, NF-4, NF-8, DC-3, SE-3, SE-4, AC-03.x, AC-04.x, TQ-4/8, PQ-1/5, TQ-5) all exist in the cited inputs. The DS-06 coverage responsibility is backed by the data-science-steps skill. The secrets, database and lesson rows are backed by task.components, org.engineering_stack and org.lessons. The blocking problem is the same one as the earlier refusal: the 83.3% coverage figure, plus the per-file coverage and passed=false results, are attributed to \\\"CI run\\\", which is not an allowed source, and no tool view contains them. The figure may well be accurate: a statement count of 30 total with 5 missed is consistent. Even so, it is ungrounded in what the output may cite."
+  "notes": "I checked the code excerpts, the module structure, the version (0.9.0 \u2192 0.10.0, proposed as DD-11's minor step and kept open as DSQ-1), the blast radius and the documentation description against the tool view, ap_forecast/docs/ap_forecast.md, README.md, ci.py, CLAUDE.md and .git/HEAD (branch feature/story is confirmed). These all match. The previous refusal points about mcp:codegraph and the `codegraph affected` output are gone. One blocking problem remains. Section 5, the section 1 summary and DSQ-2 report unit-test, static-check, coverage and overall CI results as the outcome of a run in this step, but the spine recorded only 'Sources compile'. The coverage-below-90 conclusion is probably right: 7 of roughly 30 statements in the new code have no covering test. It still has to be grounded in a recorded CI result, or worded as an inference from the tool view. On substance, CI does not pass, so the workbook outcome is only partly met."
 }

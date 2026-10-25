@@ -1,5 +1,7 @@
 {
   "failures": [
-    "G3 numbers ['83.3', '21', '24', '22'] in \"The CI run compiled, ran the 3 existing tests with 0 failures and 0 errors, and reported no static i\" do not appear in file:ap_forecast/ci.py; tool:repo"
+    "G1 judge found an unsupported statement: \"| `build_explanation_request` | `src/ap_forecast/__init__.py` | `tests/test_forecast.py` | mcp:codegraph | ... | `vendor_risk` (new) | `src/ap_forecast/__init__\" (The section 4 blast-radius table cites mcp:codegraph and quotes a CodeGraph result word for word (\"no covering tests found\"). The spine recorded only one tool r)",
+    "G1 judge found an unsupported statement: \"`codegraph affected` on the three changed source files reported no affected test files.\" (This states the output of a shell command, but no recorded tool view or file contains it. The spine's tool results hold only 'Sources compile'.)",
+    "G1 judge found an unsupported statement: \"The full current source of the three changed modules is in the tool view (tool:repo) and in mcp:codegraph. / No existing test calls `vendor_risk` or passes `ris\" (mcp:codegraph is cited again, with no recorded CodeGraph response in this step. tool:repo alone supports both statements, so the mcp:codegraph part of the citat)"
   ]
 }

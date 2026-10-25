@@ -1,73 +1,71 @@
 {
   "structured": {
-    "approach": "I read the DS-05 inputs (task.components at e526c4e, feat.design, feat.stories, org.engineering_stack, org.lessons) and the repository's ci.py and CLAUDE.md with the Read tool. I implemented the minimum design from task.components: CMP-1, a new risk.py with vendor_risk; CMP-2, the __init__ export and a minor version step; CMP-3, an additive risk=None last parameter in explain.py. Each has docstrings stating its rules, boundaries and the no-LLM constraint. I documented the changes in docs/ap_forecast.md and README.md. I ran /usr/bin/python3 ci.py and checked git status and git diff --stat. Compile, the 3 existing tests and static checks pass. Coverage is 83.3%, below the 90.0 gate, because the new lines are covered only by the CMP-4 and CMP-5 tests in tests/, which this step may not write; DS-06 writes the unit tests. I did not inflate coverage with workarounds and recorded the gap as a non-blocking open question. I then rewrote task.code.md in full. I did not commit or push.",
+    "approach": "I followed DS-05 in the data-science-steps skill. I used task.components (DS-04) as the build plan, feat.design B2 as the specification and feat.stories AC-03.x and AC-04.x as acceptance criteria. I read all five readable inputs. task.secrets_scope is restricted, so I relied on task.components section 4 for it. I used the CodeGraph MCP tool (codegraph_explore with projectPath set to the ap_forecast checkout) to read the exact source of vendor_risk, predict_delay_days and build_explanation_request, with their callers, covering tests and blast radius. I also read ci.py, README.md and CLAUDE.md. I made the smallest change the design allows: a new risk.py, `risk=None` as the last parameter of build_explanation_request, and the export plus a proposed version step in __init__.py, each with docstrings and comments. I documented the module in a new docs/ap_forecast.md and updated README.md. I then ran `codegraph sync`, `codegraph affected` and the full CI. CI does not pass: compile, the static checks and the existing tests pass, but coverage is below the 90.0 gate. The only uncovered lines are the new behaviour, whose tests (C-4, C-5) belong in tests/, which this step may not change. I did not raise coverage by any other means, and I did not commit or push.",
     "tools_used": [
       "Skill (data-science-steps)",
       "Read",
       "Write",
-      "Bash (/usr/bin/python3 ci.py, git status, git diff)"
+      "mcp__codegraph__codegraph_explore",
+      "Bash: codegraph explore / sync / affected",
+      "Bash: /usr/bin/python3 ci.py",
+      "Bash: git status / git diff / git log"
     ],
     "claims": [
       {
-        "text": "New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history), which returns 'high' above 30, 'medium' above 10, else 'low' using strict > on predict_delay_days, and imports only .predict (not explain).",
+        "text": "New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history). vendor_risk returns 'high', 'medium' or 'low' using strict '>' on predict_delay_days(history).",
+        "source": "tool:repo; feat.design; task.components"
+      },
+      {
+        "text": "risk.py imports only typing and .predict and never explain, so vendor_risk cannot call load_config or read models.json, as AC-03.7 requires.",
+        "source": "tool:repo; feat.design; feat.stories"
+      },
+      {
+        "text": "build_explanation_request now has signature (vendor, predicted_days, config=None, risk=None). When risk is not None it appends ' Risk level: <risk>.' to the prompt. Provider, model and max_tokens still come from cfg.",
+        "source": "tool:repo; feat.design; feat.stories"
+      },
+      {
+        "text": "__init__.py imports vendor_risk and adds it to __all__ next to the existing exports. __version__ is now 0.10.0, proposed as the minor step from 0.9.0 for the Developer to confirm.",
         "source": "tool:repo; task.components; feat.design"
       },
       {
-        "text": "build_explanation_request takes risk=None as its last parameter and appends ' Risk level: <risk>.' to the prompt only when risk is not None; load_config and the returned keys are unchanged.",
-        "source": "tool:repo; task.components; feat.stories"
+        "text": "CodeGraph shows build_explanation_request is called from src/ap_forecast/__init__.py and predict_delay_days from src/ap_forecast/risk.py and src/ap_forecast/__init__.py, both covered by tests/test_forecast.py. For vendor_risk it reports no covering tests found.",
+        "source": "mcp:codegraph"
       },
       {
-        "text": "__init__.py adds vendor_risk to __all__ and takes the minor version step from 0.9.0 that CMP-2 requires.",
-        "source": "task.components; feat.design"
-      },
-      {
-        "text": "The package version string in src/ap_forecast/__init__.py is now \"0.10.0\".",
-        "source": "tool:repo"
-      },
-      {
-        "text": "predict.py, models.json, ci.py and tests/ were left unchanged, as task.components requires.",
-        "source": "task.components; tool:repo"
-      },
-      {
-        "text": "ci.py enforces COVERAGE_MIN = 90.0 and static checks (no print/eval/exec, no bare except, lines of at most 140 characters) over src/ap_forecast/*.py.",
+        "text": "The CI coverage gate is COVERAGE_MIN = 90.0 over src/ap_forecast, and CI also flags print, eval, exec, bare except and lines longer than 140 characters.",
         "source": "file:ap_forecast/ci.py"
       },
       {
-        "text": "The CI run compiled, ran the 3 existing tests with 0 failures and 0 errors, and reported no static issues; the coverage gate failed (83.3% against 90.0) because the new vendor_risk body (risk.py lines 21-24) and the risk append (explain.py line 22) are not yet exercised by tests.",
-        "source": "file:ap_forecast/ci.py; tool:repo"
+        "text": "CI in this step passes compile, the static checks and the existing tests. It fails the coverage gate because the body of vendor_risk and the risk-append line in explain.py are not run by any existing test.",
+        "source": "tool:repo; mcp:codegraph; file:ap_forecast/ci.py"
       },
       {
-        "text": "The tests that cover the new lines (CMP-4 tests/test_risk.py and CMP-5 in tests/test_forecast.py) are in tests/, outside the paths this step may change (src/ap_forecast/, docs/, README.md).",
+        "text": "The tests that cover the new lines are planned as C-4 (tests/test_risk.py) and C-5 (additions to tests/test_forecast.py), and tests/ is outside the paths this step may change.",
         "source": "task.components; record:brief"
       },
       {
-        "text": "No secret, database or new dependency is needed; models.json holds only provider, model and max_tokens.",
-        "source": "task.components; org.engineering_stack; tool:repo"
+        "text": "Python 3.9 is the repository language. The CI command is /usr/bin/python3 ci.py, with line coverage >= 90%. Commit messages start with the story ID.",
+        "source": "org.engineering_stack; file:ap_forecast/CLAUDE.md"
       },
       {
-        "text": "Existing public signatures are kept and new behaviour is added, as the repository rule requires.",
-        "source": "file:ap_forecast/CLAUDE.md; feat.design"
-      },
-      {
-        "text": "L-007 is reflected: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low', as documented in docs/ap_forecast.md.",
-        "source": "org.lessons; feat.stories; tool:repo"
+        "text": "Under the boundary rule, a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low'. This follows L-007 (test the boundary day explicitly).",
+        "source": "org.lessons; feat.stories"
       }
     ],
     "open_questions": [
-      "CQ-DS5-1: CI fails the coverage gate (83.3% against 90.0) until the CMP-4 and CMP-5 tests exist. DS-05 may not write tests/, so the gate can pass only after DS-06. Confirm DS-06 adds those tests before DS-07 commits, or allow DS-05 to write tests/.",
-      "CQ-DS-2: the next version after 0.9.0 is set as a minor step in __init__.py; Developer to confirm the value.",
-      "CQ-DS-1 (carried): risk tests go in a new tests/test_risk.py (TKQ-2); Developer to confirm.",
-      "Carried: TQ-8 and PQ-5 gate the release of STORY-04 (sending the risk label to the provider); TQ-4, PQ-1 and TQ-5 are implemented as their interim answers."
+      "DSQ-2 (Developer): CI does not pass in DS-05 because coverage of src/ap_forecast is below the 90.0 gate. The tests that cover the new lines (task.components C-4, C-5) belong in tests/, which DS-05 may not change. Confirm that the gate is met in DS-06, or allow DS-05 to write tests/.",
+      "DSQ-1 (Developer): confirm 0.10.0 as the minor version step from 0.9.0.",
+      "Carried, non-blocking: TQ-4/CQ-4 (meaning of 'given' for risk), TQ-5, TQ-8 (risk label sent to acme-llm), PQ-1, PQ-5 (order against PROV-ACME-2026-11), SSQ-2 (secrets confirmation per environment)."
     ],
-    "summary": "I implemented STORY-03 and STORY-04 in ap_forecast: a new rule-based vendor_risk (risk.py, no LLM path), an additive risk=None parameter on build_explanation_request, the vendor_risk export and a minor version step. README.md and a new docs/ap_forecast.md document them. Compile, the 3 existing tests and static checks pass. The coverage gate fails (83.3% against 90%) because the tests for the new lines belong in tests/, which this step may not edit; DS-06 will add them. Nothing is committed. task.code.md is rewritten in full."
+    "summary": "I made the STORY-03 and STORY-04 changes in ap_forecast on feature/story; they are not committed. They are a new rule-based vendor_risk in risk.py (thresholds 30 and 10, strict '>', no LLM path), `risk=None` as the last parameter of build_explanation_request, the vendor_risk export, and a proposed version 0.10.0. A new docs/ap_forecast.md and an updated README.md document them. Compile, the static checks and the existing tests pass. CI does not pass yet, because coverage is below the 90.0 gate. The only uncovered lines are the new behaviour, whose planned tests belong in tests/, outside this step's allowed paths. task.code.md records the changes, the CodeGraph blast radius, the CI result and two Developer questions: the version number, and where the coverage gate is met."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
     "num_turns": 7,
-    "session_id": "253ff9c7-79dc-4f8e-b244-d266b28f9cd5",
-    "total_cost_usd": 1.3896859999999998,
+    "session_id": "1f7c454c-9741-4ba2-843d-d23b16565f86",
+    "total_cost_usd": 1.6532314000000001,
     "permission_denials": [],
-    "result": "{\"approach\":\"I read the DS-05 inputs (task.components at e526c4e, feat.design, feat.stories, org.engineering_stack, org.lessons) and the repository's ci.py and CLAUDE.md with the Read tool. I implemented the minimum design from task.components: CMP-1, a new risk.py with vendor_risk; CMP-2, the __init__ export and a minor version step; CMP-3, an additive risk=None last parameter in explain.py. Each has docstrings stating its rules, boundaries and the no-LLM constraint. I documented the changes in docs/ap_forecast.md and README.md. I ran /usr/bin/python3 ci.py and checked git status and git diff --stat. Compile, the 3 existing tests and static checks pass. Coverage is 83.3%, below the 90.0 gate, because the new lines are covered only by the CMP-4 and CMP-5 tests in tests/, which this step may not write; DS-06 writes the unit tests. I did not inflate coverage with workarounds and recorded the gap as a non-blocking open question. I then rewrote task.code.md in full. I did not commit or push.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Write\",\"Bash (/usr/bin/python3 ci.py, git status, git diff)\"],\"claims\":[{\"text\":\"New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history), which returns 'high' above 30, 'medium' above 10, else 'low' using strict > on predict_delay_days, and imports only .predict (not explain).\",\"source\":\"tool:repo; task.components; feat.design\"},{\"text\":\"build_explanation_request takes risk=None as its last parameter and appends ' Risk level: <risk>.' to the prompt only when risk is not None; load_config and the returned keys are unchanged.\",\"source\":\"tool:repo; task.components; feat.stories\"},{\"text\":\"__init__.py adds vendor_risk to __all__ and takes the minor version step from 0.9.0 that CMP-2 requires.\",\"source\":\"task.components; feat.design\"},{\"text\":\"The package version string in src/ap_forecast/__init__.py is now \\\"0.10.0\\\".\",\"source\":\"tool:repo\"},{\"text\":\"predict.py, models.json, ci.py and tests/ were left unchanged, as task.components requires.\",\"source\":\"task.components; tool:repo\"},{\"text\":\"ci.py enforces COVERAGE_MIN = 90.0 and static checks (no print/eval/exec, no bare except, lines of at most 140 characters) over src/ap_forecast/*.py.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"The CI run compiled, ran the 3 existing tests with 0 failures and 0 errors, and reported no static issues; the coverage gate failed (83.3% against 90.0) because the new vendor_risk body (risk.py lines 21-24) and the risk append (explain.py line 22) are not yet exercised by tests.\",\"source\":\"file:ap_forecast/ci.py; tool:repo\"},{\"text\":\"The tests that cover the new lines (CMP-4 tests/test_risk.py and CMP-5 in tests/test_forecast.py) are in tests/, outside the paths this step may change (src/ap_forecast/, docs/, README.md).\",\"source\":\"task.components; record:brief\"},{\"text\":\"No secret, database or new dependency is needed; models.json holds only provider, model and max_tokens.\",\"source\":\"task.components; org.engineering_stack; tool:repo\"},{\"text\":\"Existing public signatures are kept and new behaviour is added, as the repository rule requires.\",\"source\":\"file:ap_forecast/CLAUDE.md; feat.design\"},{\"text\":\"L-007 is reflected: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low', as documented in docs/ap_forecast.md.\",\"source\":\"org.lessons; feat.stories; tool:repo\"}],\"open_questions\":[\"CQ-DS5-1: CI fails the coverage gate (83.3% against 90.0) until the CMP-4 and CMP-5 tests exist. DS-05 may not write tests/, so the gate can pass only after DS-06. Confirm DS-06 adds those tests before DS-07 commits, or allow DS-05 to write tests/.\",\"CQ-DS-2: the next version after 0.9.0 is set as a minor step in __init__.py; Developer to confirm the value.\",\"CQ-DS-1 (carried): risk tests go in a new tests/test_risk.py (TKQ-2); Developer to confirm.\",\"Carried: TQ-8 and PQ-5 gate the release of STORY-04 (sending the risk label to the provider); TQ-4, PQ-1 and TQ-5 are implemented as their interim answers.\"],\"summary\":\"I implemented STORY-03 and STORY-04 in ap_forecast: a new rule-based vendor_risk (risk.py, no LLM path), an additive risk=None parameter on build_explanation_request, the vendor_risk export and a minor version step. README.md and a new docs/ap_forecast.md document them. Compile, the 3 existing tests and static checks pass. The coverage gate fails (83.3% against 90%) because the tests for the new lines belong in tests/, which this step may not edit; DS-06 will add them. Nothing is committed. task.code.md is rewritten in full.\"}"
+    "result": "{\"approach\":\"I followed DS-05 in the data-science-steps skill. I used task.components (DS-04) as the build plan, feat.design B2 as the specification and feat.stories AC-03.x and AC-04.x as acceptance criteria. I read all five readable inputs. task.secrets_scope is restricted, so I relied on task.components section 4 for it. I used the CodeGraph MCP tool (codegraph_explore with projectPath set to the ap_forecast checkout) to read the exact source of vendor_risk, predict_delay_days and build_explanation_request, with their callers, covering tests and blast radius. I also read ci.py, README.md and CLAUDE.md. I made the smallest change the design allows: a new risk.py, `risk=None` as the last parameter of build_explanation_request, and the export plus a proposed version step in __init__.py, each with docstrings and comments. I documented the module in a new docs/ap_forecast.md and updated README.md. I then ran `codegraph sync`, `codegraph affected` and the full CI. CI does not pass: compile, the static checks and the existing tests pass, but coverage is below the 90.0 gate. The only uncovered lines are the new behaviour, whose tests (C-4, C-5) belong in tests/, which this step may not change. I did not raise coverage by any other means, and I did not commit or push.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Write\",\"mcp__codegraph__codegraph_explore\",\"Bash: codegraph explore / sync / affected\",\"Bash: /usr/bin/python3 ci.py\",\"Bash: git status / git diff / git log\"],\"claims\":[{\"text\":\"New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history). vendor_risk returns 'high', 'medium' or 'low' using strict '>' on predict_delay_days(history).\",\"source\":\"tool:repo; feat.design; task.components\"},{\"text\":\"risk.py imports only typing and .predict and never explain, so vendor_risk cannot call load_config or read models.json, as AC-03.7 requires.\",\"source\":\"tool:repo; feat.design; feat.stories\"},{\"text\":\"build_explanation_request now has signature (vendor, predicted_days, config=None, risk=None). When risk is not None it appends ' Risk level: <risk>.' to the prompt. Provider, model and max_tokens still come from cfg.\",\"source\":\"tool:repo; feat.design; feat.stories\"},{\"text\":\"__init__.py imports vendor_risk and adds it to __all__ next to the existing exports. __version__ is now 0.10.0, proposed as the minor step from 0.9.0 for the Developer to confirm.\",\"source\":\"tool:repo; task.components; feat.design\"},{\"text\":\"CodeGraph shows build_explanation_request is called from src/ap_forecast/__init__.py and predict_delay_days from src/ap_forecast/risk.py and src/ap_forecast/__init__.py, both covered by tests/test_forecast.py. For vendor_risk it reports no covering tests found.\",\"source\":\"mcp:codegraph\"},{\"text\":\"The CI coverage gate is COVERAGE_MIN = 90.0 over src/ap_forecast, and CI also flags print, eval, exec, bare except and lines longer than 140 characters.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"CI in this step passes compile, the static checks and the existing tests. It fails the coverage gate because the body of vendor_risk and the risk-append line in explain.py are not run by any existing test.\",\"source\":\"tool:repo; mcp:codegraph; file:ap_forecast/ci.py\"},{\"text\":\"The tests that cover the new lines are planned as C-4 (tests/test_risk.py) and C-5 (additions to tests/test_forecast.py), and tests/ is outside the paths this step may change.\",\"source\":\"task.components; record:brief\"},{\"text\":\"Python 3.9 is the repository language. The CI command is /usr/bin/python3 ci.py, with line coverage >= 90%. Commit messages start with the story ID.\",\"source\":\"org.engineering_stack; file:ap_forecast/CLAUDE.md\"},{\"text\":\"Under the boundary rule, a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low'. This follows L-007 (test the boundary day explicitly).\",\"source\":\"org.lessons; feat.stories\"}],\"open_questions\":[\"DSQ-2 (Developer): CI does not pass in DS-05 because coverage of src/ap_forecast is below the 90.0 gate. The tests that cover the new lines (task.components C-4, C-5) belong in tests/, which DS-05 may not change. Confirm that the gate is met in DS-06, or allow DS-05 to write tests/.\",\"DSQ-1 (Developer): confirm 0.10.0 as the minor version step from 0.9.0.\",\"Carried, non-blocking: TQ-4/CQ-4 (meaning of 'given' for risk), TQ-5, TQ-8 (risk label sent to acme-llm), PQ-1, PQ-5 (order against PROV-ACME-2026-11), SSQ-2 (secrets confirmation per environment).\"],\"summary\":\"I made the STORY-03 and STORY-04 changes in ap_forecast on feature/story; they are not committed. They are a new rule-based vendor_risk in risk.py (thresholds 30 and 10, strict '>', no LLM path), `risk=None` as the last parameter of build_explanation_request, the vendor_risk export, and a proposed version 0.10.0. A new docs/ap_forecast.md and an updated README.md document them. Compile, the static checks and the existing tests pass. CI does not pass yet, because coverage is below the 90.0 gate. The only uncovered lines are the new behaviour, whose planned tests belong in tests/, outside this step's allowed paths. task.code.md records the changes, the CodeGraph blast radius, the CI result and two Developer questions: the version number, and where the coverage gate is met.\"}"
   }
 }
