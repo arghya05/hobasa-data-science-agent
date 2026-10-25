@@ -1,86 +1,88 @@
 {
   "structured": {
-    "approach": "I followed the data-science-steps DS-04 procedure. First I read the six contracted inputs and the ap_forecast code (the tool view plus ci.py). Then I used context_list to confirm that the DS-02 (task.secrets_scope) and DS-03 (task.db_changes) outputs are approved background, and read both to answer the secrets question for every environment. A draft from an earlier attempt was already at the output path. I read it and rewrote it in full. In the rewrite I corrected its task.repo_access revision (aac590a, not c7b4be8), its swapped RAQ-1/RAQ-2 references, and its unchecked secrets row, which now cites DS-02. A verifier subagent then flagged 4 problems: background hashes with no source, a memory claim that contradicted feat.tasks section 8, an uncited docstring suggestion, and a wrong section reference. It also flagged an inference about coverage that was not marked as such. I fixed all of these. No shell commands were run, because the G9 hook allows none in DS-04.",
+    "approach": "I followed DS-04 in the data-science-steps skill. I read all six contracted inputs. For feat.stories, feat.prd and feat.trd I read only the Data Science parts (STORY-03 and STORY-04, AC-7 to AC-12, IF-3 and IF-4, T-5 to T-7). I also read the approved background outputs with context_get: task.secrets_scope (DS-02), task.db_changes (DS-03) and feat.clarifications (DES-03). Then I read the existing ap_forecast code: the tool view, ci.py and README.md. I used CodeGraph to check which callers depend on build_explanation_request, predict_delay_days and load_config. I mapped TSK-03 and TSK-04 onto the smallest set of files allowed by each task's file budget and wrote a minimal code sketch for each component. I listed the layers that do not change: predict.py, models.json, CI, storage, secrets and the other repositories. A verifier subagent checked the draft against the cited sources. I then fixed what it found: the per-environment secrets wording (SSQ-2 is still open), wrong section references for TA-3 and TA-4, the approval status of feat.tasks (cited from the journey board, with TKQ-2 still open), two inferences now labelled as agent judgement, and the diagram sources.",
     "tools_used": [
       "Skill (data-science-steps)",
       "Read",
       "Grep",
       "Glob",
-      "mcp__hobasa-context__context_list",
+      "mcp:hobasa-context (context_list, context_get)",
+      "mcp:codegraph (codegraph_explore)",
       "Agent (verifier)",
       "Write",
       "Edit"
     ],
     "claims": [
       {
-        "text": "The Data Science lane changes only ap_forecast, for TSK-03 (STORY-03) and TSK-04 (STORY-04).",
-        "source": "feat.tasks; task.repo_access"
+        "text": "The Data Science lane has two tasks, both in ap_forecast: TSK-03 (STORY-03, new risk.vendor_risk) and TSK-04 (STORY-04, build_explanation_request gains risk=None).",
+        "source": "feat.tasks"
       },
       {
-        "text": "Create src/ap_forecast/risk.py with HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history). It calls predict_delay_days once and compares with strict '>'. It imports only predict_delay_days, not explain.",
-        "source": "feat.design; feat.trd; feat.tasks"
+        "text": "TSK-03 creates a new module src/ap_forecast/risk.py with HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history: Iterable[int]) -> str. It returns 'high' when the prediction is > 30, 'medium' when > 10, else 'low'. risk.py imports only predict_delay_days and never explain.",
+        "source": "feat.design; feat.tasks; journey:feat.clarifications"
       },
       {
-        "text": "Update src/ap_forecast/__init__.py: import vendor_risk, add it to __all__, and take one minor version step from 0.9.0. TSK-03 owns the version step.",
+        "text": "vendor_risk must call predict_delay_days exactly once so that a generator history works, and it does not validate history values.",
+        "source": "journey:feat.clarifications; feat.tasks"
+      },
+      {
+        "text": "TSK-04 changes explain.py only by adding risk=None as the last parameter and appending f\" Risk level: {risk}.\" when risk is not None. Provider, model and max_tokens still come from config or load_config().",
+        "source": "feat.design; feat.trd; feat.stories"
+      },
+      {
+        "text": "src/ap_forecast/__init__.py imports vendor_risk, adds it to __all__, and takes one version step from 0.9.0. TSK-03 owns that step.",
         "source": "feat.design; feat.tasks; tool:repo"
       },
       {
-        "text": "Update explain.build_explanation_request additively. Add risk=None as the last parameter and append f\" Risk level: {risk}.\" only when risk is not None. Provider, model and max_tokens still come from config or load_config().",
-        "source": "feat.trd; feat.design; feat.stories"
+        "text": "The new tests go in tests/test_risk.py: levels, the boundaries [30], [31], [10] and [11], empty and early-only histories, no LLM, and the export. tests/test_forecast.py gains test_request_with_risk and test_request_without_risk_unchanged. The three existing tests stay unchanged.",
+        "source": "feat.tasks; feat.design; record:memory"
       },
       {
-        "text": "Tests: a new tests/test_risk.py with the five vendor_risk tests, and two request tests appended to tests/test_forecast.py. The existing three tests stay unchanged.",
-        "source": "feat.tasks; feat.design"
+        "text": "Inside ap_forecast, the only callers of build_explanation_request and predict_delay_days are the __init__.py re-export and tests/test_forecast.py.",
+        "source": "mcp:codegraph"
       },
       {
-        "text": "predict.py and models.json stay unchanged. models.json holds provider acme-llm, model acme-text-2 and max_tokens 300.",
-        "source": "feat.tasks; tool:repo"
+        "text": "predict.py, models.json (provider acme-llm, model acme-text-2, max_tokens 300), ci.py, README.md and CLAUDE.md are unchanged.",
+        "source": "feat.tasks; tool:repo; file:ap_forecast/README.md; file:ap_forecast/ci.py"
       },
       {
-        "text": "ci.py finds every test under tests/ and measures coverage on src/ap_forecast with COVERAGE_MIN = 90.0. It also runs static checks: no print/eval/exec, no bare except, lines at most 140 characters. So new modules and test files need no CI change.",
+        "text": "CI compiles src, discovers tests under tests/, gates coverage at 90.0, and flags print, eval, exec, bare except and lines over 140 characters in src/ap_forecast/*.py.",
         "source": "file:ap_forecast/ci.py"
       },
       {
-        "text": "No secrets are required or granted in CI, feature/<story>, dev or main, and no access request is needed.",
+        "text": "No database change is required for the Data Science tasks.",
+        "source": "journey:task.db_changes"
+      },
+      {
+        "text": "No secrets are required or granted for the ap_forecast repository. The per-environment confirmation is still open as SSQ-2.",
         "source": "journey:task.secrets_scope"
       },
       {
-        "text": "No database or Databricks change is needed for the Data Science lane.",
-        "source": "journey:task.db_changes; task.repo_access"
+        "text": "No other lane imports the ap_forecast package. The other lanes build against the DC-2 and DC-3 contracts.",
+        "source": "journey:feat.clarifications; feat.design"
       },
       {
-        "text": "Boundary tests use single-value histories [30], [31], [10] and [11], applying lesson L-007.",
-        "source": "feat.tasks; record:memory"
+        "text": "feat.stories TK-03.2 proposes putting the risk tests in tests/test_forecast.py, while feat.tasks puts them in a new tests/test_risk.py. Both feat.design B2.5 and CL-X4 allow either, and TKQ-2 is still open for the Developer.",
+        "source": "feat.stories; feat.tasks; feat.design; journey:feat.clarifications"
       },
       {
-        "text": "PROV-ACME-2026-11 also changes build_explanation_request. Whichever change merges second rebases and re-runs T-7. This gates release, not coding.",
-        "source": "feat.tasks; feat.trd; feat.prd"
+        "text": "The repository is on branch feature/story with write access, and the CI command is /usr/bin/python3 ci.py.",
+        "source": "task.repo_access"
       }
     ],
     "open_questions": [
-      "CQ-DS-1: feat.stories TK-03.2 puts the risk tests in tests/test_forecast.py, but feat.tasks (section 2; TA-4) assigns a new tests/test_risk.py. Interim: follow feat.tasks. The Developer confirms under TKQ-2.",
-      "CQ-DS-2: What is the exact next version after 0.9.0? Interim: a minor step, value to be confirmed in DS-05.",
-      "RAQ-1 (carried): Is the coverage package installed for /usr/bin/python3 on the CI runner? The first CI run will confirm.",
-      "RAQ-2 (carried): Should STORY-03 and STORY-04 share the single feature/story branch, or each get its own branch?"
+      "DSQ-1 (non-blocking): which version number replaces 0.9.0? feat.design DD-11 asks for a minor step that the lane confirms, and no input gives the number. Owner: Developer.",
+      "Carried, non-blocking: TQ-4 / CQ-4 (meaning of 'given' for risk), TQ-5 (early payments counted as 0), TQ-8 (risk label sent to acme-llm), PQ-1 (empty history), PQ-5 (order against PROV-ACME-2026-11), RAQ-1 to RAQ-3 (task.repo_access), SSQ-1 and SSQ-2 (secrets per environment, from task.secrets_scope), TKQ-2 (test-file split)."
     ],
-    "summary": "I wrote task.components for the ap_forecast Data Science lane. It lists 5 components: create risk.py with vendor_risk and two threshold constants (CMP-1), update __init__.py with the export and version step (CMP-2), add risk=None to explain.py (CMP-3), create tests/test_risk.py (CMP-4), and append two tests to tests/test_forecast.py (CMP-5). predict.py, models.json and ci.py stay unchanged. The file includes minimal code sketches and maps each test to its acceptance criteria. Per the DS-02 and DS-03 outputs, no secrets, database or Databricks are needed in any environment. There are no blocking questions. The verifier's findings have been fixed."
+    "summary": "task.components lists five file changes in ap_forecast and nothing outside it. The new files are src/ap_forecast/risk.py (vendor_risk with the 30 and 10 thresholds; TSK-03) and tests/test_risk.py. explain.py gets risk=None as its last parameter and one conditional append to the prompt (TSK-04). __init__.py exports vendor_risk and takes the version step from 0.9.0. tests/test_forecast.py gets two new tests. The file includes a minimal code sketch for each change and the existing-code walkthrough behind it. predict.py, models.json, CI, storage and the other repositories stay unchanged. The repository needs no secrets and no database change; confirming secrets for every environment is still open as SSQ-2. There are no blocking questions; DSQ-1 (the next version number) is for the Developer."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
-    "num_turns": 26,
-    "session_id": "53c6affa-28bc-4873-a2bc-acee9a26a52c",
-    "total_cost_usd": 1.6019969,
-    "permission_denials": [
-      {
-        "tool_name": "Bash",
-        "tool_use_id": "toolu_01DWmpJksf9Enoc8evVsgAMA",
-        "tool_input": {
-          "command": "ls -R hobasa-data-science-agent/outputs; cd ap-forecast-sample && git ls-files && wc -l src/ap_forecast/*.py tests/*.py ci.py",
-          "description": "List agent outputs and repo files with line counts"
-        }
-      }
-    ],
-    "result": "{\"approach\":\"I followed the data-science-steps DS-04 procedure. First I read the six contracted inputs and the ap_forecast code (the tool view plus ci.py). Then I used context_list to confirm that the DS-02 (task.secrets_scope) and DS-03 (task.db_changes) outputs are approved background, and read both to answer the secrets question for every environment. A draft from an earlier attempt was already at the output path. I read it and rewrote it in full. In the rewrite I corrected its task.repo_access revision (aac590a, not c7b4be8), its swapped RAQ-1/RAQ-2 references, and its unchecked secrets row, which now cites DS-02. A verifier subagent then flagged 4 problems: background hashes with no source, a memory claim that contradicted feat.tasks section 8, an uncited docstring suggestion, and a wrong section reference. It also flagged an inference about coverage that was not marked as such. I fixed all of these. No shell commands were run, because the G9 hook allows none in DS-04.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Grep\",\"Glob\",\"mcp__hobasa-context__context_list\",\"Agent (verifier)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"The Data Science lane changes only ap_forecast, for TSK-03 (STORY-03) and TSK-04 (STORY-04).\",\"source\":\"feat.tasks; task.repo_access\"},{\"text\":\"Create src/ap_forecast/risk.py with HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history). It calls predict_delay_days once and compares with strict '>'. It imports only predict_delay_days, not explain.\",\"source\":\"feat.design; feat.trd; feat.tasks\"},{\"text\":\"Update src/ap_forecast/__init__.py: import vendor_risk, add it to __all__, and take one minor version step from 0.9.0. TSK-03 owns the version step.\",\"source\":\"feat.design; feat.tasks; tool:repo\"},{\"text\":\"Update explain.build_explanation_request additively. Add risk=None as the last parameter and append f\\\" Risk level: {risk}.\\\" only when risk is not None. Provider, model and max_tokens still come from config or load_config().\",\"source\":\"feat.trd; feat.design; feat.stories\"},{\"text\":\"Tests: a new tests/test_risk.py with the five vendor_risk tests, and two request tests appended to tests/test_forecast.py. The existing three tests stay unchanged.\",\"source\":\"feat.tasks; feat.design\"},{\"text\":\"predict.py and models.json stay unchanged. models.json holds provider acme-llm, model acme-text-2 and max_tokens 300.\",\"source\":\"feat.tasks; tool:repo\"},{\"text\":\"ci.py finds every test under tests/ and measures coverage on src/ap_forecast with COVERAGE_MIN = 90.0. It also runs static checks: no print/eval/exec, no bare except, lines at most 140 characters. So new modules and test files need no CI change.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"No secrets are required or granted in CI, feature/<story>, dev or main, and no access request is needed.\",\"source\":\"journey:task.secrets_scope\"},{\"text\":\"No database or Databricks change is needed for the Data Science lane.\",\"source\":\"journey:task.db_changes; task.repo_access\"},{\"text\":\"Boundary tests use single-value histories [30], [31], [10] and [11], applying lesson L-007.\",\"source\":\"feat.tasks; record:memory\"},{\"text\":\"PROV-ACME-2026-11 also changes build_explanation_request. Whichever change merges second rebases and re-runs T-7. This gates release, not coding.\",\"source\":\"feat.tasks; feat.trd; feat.prd\"}],\"open_questions\":[\"CQ-DS-1: feat.stories TK-03.2 puts the risk tests in tests/test_forecast.py, but feat.tasks (section 2; TA-4) assigns a new tests/test_risk.py. Interim: follow feat.tasks. The Developer confirms under TKQ-2.\",\"CQ-DS-2: What is the exact next version after 0.9.0? Interim: a minor step, value to be confirmed in DS-05.\",\"RAQ-1 (carried): Is the coverage package installed for /usr/bin/python3 on the CI runner? The first CI run will confirm.\",\"RAQ-2 (carried): Should STORY-03 and STORY-04 share the single feature/story branch, or each get its own branch?\"],\"summary\":\"I wrote task.components for the ap_forecast Data Science lane. It lists 5 components: create risk.py with vendor_risk and two threshold constants (CMP-1), update __init__.py with the export and version step (CMP-2), add risk=None to explain.py (CMP-3), create tests/test_risk.py (CMP-4), and append two tests to tests/test_forecast.py (CMP-5). predict.py, models.json and ci.py stay unchanged. The file includes minimal code sketches and maps each test to its acceptance criteria. Per the DS-02 and DS-03 outputs, no secrets, database or Databricks are needed in any environment. There are no blocking questions. The verifier's findings have been fixed.\"}"
+    "num_turns": 36,
+    "session_id": "d06a348f-14f9-4158-b315-cb5da115a5c6",
+    "total_cost_usd": 2.1515443,
+    "permission_denials": [],
+    "result": "{\"approach\":\"I followed DS-04 in the data-science-steps skill. I read all six contracted inputs. For feat.stories, feat.prd and feat.trd I read only the Data Science parts (STORY-03 and STORY-04, AC-7 to AC-12, IF-3 and IF-4, T-5 to T-7). I also read the approved background outputs with context_get: task.secrets_scope (DS-02), task.db_changes (DS-03) and feat.clarifications (DES-03). Then I read the existing ap_forecast code: the tool view, ci.py and README.md. I used CodeGraph to check which callers depend on build_explanation_request, predict_delay_days and load_config. I mapped TSK-03 and TSK-04 onto the smallest set of files allowed by each task's file budget and wrote a minimal code sketch for each component. I listed the layers that do not change: predict.py, models.json, CI, storage, secrets and the other repositories. A verifier subagent checked the draft against the cited sources. I then fixed what it found: the per-environment secrets wording (SSQ-2 is still open), wrong section references for TA-3 and TA-4, the approval status of feat.tasks (cited from the journey board, with TKQ-2 still open), two inferences now labelled as agent judgement, and the diagram sources.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Grep\",\"Glob\",\"mcp:hobasa-context (context_list, context_get)\",\"mcp:codegraph (codegraph_explore)\",\"Agent (verifier)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"The Data Science lane has two tasks, both in ap_forecast: TSK-03 (STORY-03, new risk.vendor_risk) and TSK-04 (STORY-04, build_explanation_request gains risk=None).\",\"source\":\"feat.tasks\"},{\"text\":\"TSK-03 creates a new module src/ap_forecast/risk.py with HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history: Iterable[int]) -> str. It returns 'high' when the prediction is > 30, 'medium' when > 10, else 'low'. risk.py imports only predict_delay_days and never explain.\",\"source\":\"feat.design; feat.tasks; journey:feat.clarifications\"},{\"text\":\"vendor_risk must call predict_delay_days exactly once so that a generator history works, and it does not validate history values.\",\"source\":\"journey:feat.clarifications; feat.tasks\"},{\"text\":\"TSK-04 changes explain.py only by adding risk=None as the last parameter and appending f\\\" Risk level: {risk}.\\\" when risk is not None. Provider, model and max_tokens still come from config or load_config().\",\"source\":\"feat.design; feat.trd; feat.stories\"},{\"text\":\"src/ap_forecast/__init__.py imports vendor_risk, adds it to __all__, and takes one version step from 0.9.0. TSK-03 owns that step.\",\"source\":\"feat.design; feat.tasks; tool:repo\"},{\"text\":\"The new tests go in tests/test_risk.py: levels, the boundaries [30], [31], [10] and [11], empty and early-only histories, no LLM, and the export. tests/test_forecast.py gains test_request_with_risk and test_request_without_risk_unchanged. The three existing tests stay unchanged.\",\"source\":\"feat.tasks; feat.design; record:memory\"},{\"text\":\"Inside ap_forecast, the only callers of build_explanation_request and predict_delay_days are the __init__.py re-export and tests/test_forecast.py.\",\"source\":\"mcp:codegraph\"},{\"text\":\"predict.py, models.json (provider acme-llm, model acme-text-2, max_tokens 300), ci.py, README.md and CLAUDE.md are unchanged.\",\"source\":\"feat.tasks; tool:repo; file:ap_forecast/README.md; file:ap_forecast/ci.py\"},{\"text\":\"CI compiles src, discovers tests under tests/, gates coverage at 90.0, and flags print, eval, exec, bare except and lines over 140 characters in src/ap_forecast/*.py.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"No database change is required for the Data Science tasks.\",\"source\":\"journey:task.db_changes\"},{\"text\":\"No secrets are required or granted for the ap_forecast repository. The per-environment confirmation is still open as SSQ-2.\",\"source\":\"journey:task.secrets_scope\"},{\"text\":\"No other lane imports the ap_forecast package. The other lanes build against the DC-2 and DC-3 contracts.\",\"source\":\"journey:feat.clarifications; feat.design\"},{\"text\":\"feat.stories TK-03.2 proposes putting the risk tests in tests/test_forecast.py, while feat.tasks puts them in a new tests/test_risk.py. Both feat.design B2.5 and CL-X4 allow either, and TKQ-2 is still open for the Developer.\",\"source\":\"feat.stories; feat.tasks; feat.design; journey:feat.clarifications\"},{\"text\":\"The repository is on branch feature/story with write access, and the CI command is /usr/bin/python3 ci.py.\",\"source\":\"task.repo_access\"}],\"open_questions\":[\"DSQ-1 (non-blocking): which version number replaces 0.9.0? feat.design DD-11 asks for a minor step that the lane confirms, and no input gives the number. Owner: Developer.\",\"Carried, non-blocking: TQ-4 / CQ-4 (meaning of 'given' for risk), TQ-5 (early payments counted as 0), TQ-8 (risk label sent to acme-llm), PQ-1 (empty history), PQ-5 (order against PROV-ACME-2026-11), RAQ-1 to RAQ-3 (task.repo_access), SSQ-1 and SSQ-2 (secrets per environment, from task.secrets_scope), TKQ-2 (test-file split).\"],\"summary\":\"task.components lists five file changes in ap_forecast and nothing outside it. The new files are src/ap_forecast/risk.py (vendor_risk with the 30 and 10 thresholds; TSK-03) and tests/test_risk.py. explain.py gets risk=None as its last parameter and one conditional append to the prompt (TSK-04). __init__.py exports vendor_risk and takes the version step from 0.9.0. tests/test_forecast.py gets two new tests. The file includes a minimal code sketch for each change and the existing-code walkthrough behind it. predict.py, models.json, CI, storage and the other repositories stay unchanged. The repository needs no secrets and no database change; confirming secrets for every environment is still open as SSQ-2. There are no blocking questions; DSQ-1 (the next version number) is for the Developer.\"}"
   }
 }

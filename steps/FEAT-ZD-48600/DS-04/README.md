@@ -1,58 +1,66 @@
-# DS-04 Identify the components/layers to be changed (Data Science agent)
+# DS-04 · Identify the components/layers to be changed
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Previous outcome  
-**Action:** Read the existing code and understand it.
+**Agent:** Data Science · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** automated checks and the independent judge
+
+**What this step does:** Read the existing code and understand it.
 Identify the components/layers that needs to be created/updated with minimum lines of code
-Access for the secrets in all the environments ⁵  
-**Outcome expected:** The list of components/layers needs to be created/updated with minimum lines of code
+Access for the secrets in all the environments ⁵
 
-## Inputs (what the agent was given)
+**Expected outcome:** The list of components/layers needs to be created/updated with minimum lines of code
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Started by:** Previous outcome
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| feat.stories | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.stories.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md | 0590ea4 | REQ-08 |
-| feat.prd | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.prd.md | final_document/e2e-run/runs/run-20261025-111239-feat-zd-48600/workspace/agents/hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md | 908b58d | REQ-05 |
-| feat.trd | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.trd.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.trd.md | 3637e51 | REQ-07 |
-| feat.design | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.design.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md | 722a98f | DES-02 |
-| task.repo_access | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/task.repo_access.md | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md | aac590a | DS-01 |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `feat.stories` | Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision) | Requirement agent · REQ-08 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/feat.stories.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.stories.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-08_feat-stories.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-08_feat-stories.pdf) |
+| 3 | `feat.prd` | Approved PRD | Requirement agent · REQ-05 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/feat.prd.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.prd.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-05_feat-prd.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-05_feat-prd.pdf) |
+| 4 | `feat.trd` | Approved TRD | Requirement agent · REQ-07 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/feat.trd.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.trd.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-07_feat-trd.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-07_feat-trd.pdf) |
+| 5 | `feat.design` | HLD, LLD and contracts | Design agent · DES-02 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/feat.design.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.design.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-02_feat-design.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-02_feat-design.pdf) |
+| 6 | `task.repo_access` | Repository (and Databricks) availability and write access | Data Science agent · DS-01 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-04/task.repo_access.md) · [original](https://github.com/arghya05/hobasa-data-science-agent/blob/main/outputs/FEAT-ZD-48600/task.repo_access.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-science-agent/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.html) · [PDF](https://github.com/arghya05/hobasa-data-science-agent/blob/main/docs/FEAT-ZD-48600/DS-01_task-repo_access.pdf) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.components | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.components.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.components` | Components, layers, sources or pipelines to change | [Markdown](https://github.com/arghya05/hobasa-data-science-agent/blob/main/outputs/FEAT-ZD-48600/task.components.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-science-agent/main/docs/FEAT-ZD-48600/DS-04_task-components.html) · [PDF](https://github.com/arghya05/hobasa-data-science-agent/blob/main/docs/FEAT-ZD-48600/DS-04_task-components.pdf) |
 
-## Code
-
-Repository `ap-forecast-sample`, branch `feature/story`, commit `d67e866`
+**Code:** repository [ap-forecast-sample](https://github.com/arghya05/ap-forecast-sample) · branch [feature/story](https://github.com/arghya05/ap-forecast-sample/tree/feature/story) · commit [d67e866](https://github.com/arghya05/ap-forecast-sample/commit/d67e866)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- The blast-radius statement cites mcp:codegraph, but the step left no saved codegraph response, so the judge cannot check that the call happened. The finding itself (the only callers are the `__init__.py` re-export and `tests/test_forecast.py`) matches tool:repo. Cite tool:repo alongside it, or save the connector response.
+- Section 8 says the carried RAQ-1 to RAQ-3 and SSQ-1/SSQ-2 do not block coding and cites journey:feat.clarifications section 10. That section covers only the story-level pending items. The non-blocking status of the RAQ and SSQ items comes from task.repo_access section 3 and task.secrets_scope section 3, so cite those as well.
+- The workbook action includes 'Access for the secrets in all the environments'. The output carries the per-environment confirmation forward as non-blocking SSQ-2, which DS-02 had already accepted. It should name the environments involved (or record that no input names them) and say who confirms each one, so the person at the gate can see this part of the action is still open and not finished.
+- DSQ-1 (the version number replacing 0.9.0) is fine as a non-blocking item, because feat.design DD-11 and feat.tasks section 2 leave the number 'for the lane to confirm'. It would read better to say that explicitly, so it does not look like an unasked default.
+- The 'minimum lines of code' outcome is met in qualitative terms (sketches, 'only the signature line and one conditional'). A rough per-component estimate of added or changed lines, marked as agent judgement, would help DS-05 and the gate check the minimality claim.
+
 ## How the agent worked
 
-- Approach: I followed the data-science-steps DS-04 procedure. First I read the six contracted inputs and the ap_forecast code (the tool view plus ci.py). Then I used context_list to confirm that the DS-02 (task.secrets_scope) and DS-03 (task.db_changes) outputs are approved background, and read both to answer the secrets question for every environment. A draft from an earlier attempt was already at the output path. I read it and rewrote it in full. In the rewrite I corrected its task.repo_access revision (aac590a, not c7b4be8), its swapped RAQ-1/RAQ-2 references, and its unchecked secrets row, which now cites DS-02. A verifier subagent then flagged 4 problems: background hashes with no source, a memory claim that contradicted feat.tasks section 8, an uncited docstring suggestion, and a wrong section reference. It also flagged an inference about coverage that was not marked as such. I fixed all of these. No shell commands were run, because the G9 hook allows none in DS-04.
-- Tools used: Skill (data-science-steps), Read, Grep, Glob, mcp__hobasa-context__context_list, Agent (verifier), Write, Edit
-- Helper subagents: Agent
-- Connector calls: none
+- **Approach:** I followed DS-04 in the data-science-steps skill. I read all six contracted inputs. For feat.stories, feat.prd and feat.trd I read only the Data Science parts (STORY-03 and STORY-04, AC-7 to AC-12, IF-3 and IF-4, T-5 to T-7). I also read the approved background outputs with context_get: task.secrets_scope (DS-02), task.db_changes (DS-03) and feat.clarifications (DES-03). Then I read the existing ap_forecast code: the tool view, ci.py and README.md. I used CodeGraph to check which callers depend on build_explanation_request, predict_delay_days and load_config. I mapped TSK-03 and TSK-04 onto the smallest set of files allowed by each task's file budget and wrote a minimal code sketch for each component. I listed the layers that do not change: predict.py, models.json, CI, storage, secrets and the other repositories. A verifier subagent checked the draft against the cited sources. I then fixed what it found: the per-environment secrets wording (SSQ-2 is still open), wrong section references for TA-3 and TA-4, the approval status of feat.tasks (cited from the journey board, with TKQ-2 still open), two inferences now labelled as agent judgement, and the diagram sources.
+- **Tools used:** Skill (data-science-steps), Read, Grep, Glob, mcp:hobasa-context (context_list, context_get), mcp:codegraph (codegraph_explore), Agent (verifier), Write, Edit
+- **Helper subagents:** Agent
+- **Connector calls:** none
 
-## Attempts (checks before any person saw the output)
+## Files in this folder (audit trail)
 
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 4, 'useful': 5} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- Header row 'Background read' gives commit hashes e779ba1 (task.secrets_scope) and 27457ab (task.db_changes) and attributes them to 'mcp:hobasa-context (context_list revisions)'. Neither hash appears in any input, brief or readable record (JOURNEY.md, COMMUNICATION.md). Ask the agent to save the context_list receipt, or drop the hashes, so the gate can check them.
-- The output cites 'journey:task.secrets_scope' and 'journey:task.db_changes', but the brief does not list 'journey:' as a citation form. These files were read as 'Other GitHub files', so they should be cited as file:hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md and file:hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.db_changes.md.
-- Section 1 cites journey:task.db_changes section 2 for 'no network, pipeline or storage layer'. That section covers only the absence of a database and migrations. The 'no network' part rests on tool:repo (explain.py builds the request dict but does not send it), so tool:repo should carry that claim.
-- CQ-DS-1 resolves the test-file conflict in favour of feat.tasks because it is 'the later task breakdown'. feat.design B2.5 and feat.tasks section 2 (TA-4) both allow either file, so the agent could say the conflict is only between TK-03.2's agent judgement and TA-4, not with the approved design.
-- Section 6 says TSK-03 and TSK-04 'touch different files apart from the shared version step'. Under feat.tasks 'Files in budget', TSK-04 does not touch __init__.py at all, so the two tasks share no file. The wording could be tightened to say so.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
