@@ -1,0 +1,9 @@
+{
+  "failures": [
+    "G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session",
+    "G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session",
+    "G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session",
+    "G3 numbers ['100.0'] in \"The CI run in this step reports compile true, 11 tests run, 0 failures, 0 errors, coverage 100.0, no\" do not appear in tool:repo",
+    "G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session"
+  ]
+}
