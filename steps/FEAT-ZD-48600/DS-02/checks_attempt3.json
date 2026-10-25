@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"feat.tasks was read through context_get (revision b0fd4d2, receipt sha256 bc7702bf74b40968)\" (The revision b0fd4d2 is in record:brief, but the receipt hash 'bc7702bf74b40968' does not appear in any input, tool view or file the agent read. No saved contex)"
+  ]
+}

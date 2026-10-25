@@ -1,0 +1,16 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Line 45 has a stray artifact, \"[Tool result] [ap_forecast] Tool registry: no secrets required or granted (permission table)\". It sits outside every section and looks like pasted tool output. Remove it, or move it into the Source column it already backs.",
+    "Section 2 adds a \"Local / CI (task CI bar)\" environment row, but feat.tasks section 2 only names the branches main, dev and feature/<story>. Mark this row as agent judgement so nobody reads it as an environment taken from a source.",
+    "Section 3 says the component that sends the request to acme-llm \"needs a provider credential\". That is an inference: explain.py (file:ap_forecast/src/ap_forecast/explain.py) only builds the request dict, and models.json holds no credential field. Cite explain.py and models.json for \"no outbound call / no credential in this repository\", and label the credential remark as an assumption. SSQ-1 already raises it as an open question.",
+    "The TSK-03 row cites tool:repo-access next to the statement that risk.py imports only predict_delay_days. That fact comes from feat.tasks (TSK-03, \"Must not change\"), not from the tool view, so cite feat.tasks for it. The tool view supports only the \"Secrets needed: None\" cell."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "I found no hallucinations. The output removed the receipt hash that caused the last refusal, and it now cites only commit b0fd4d2 (record:brief). Every other factual statement matches a source: the task IDs and stories, TSK-03's no-LLM, no-network and no models.json constraints, TSK-04's risk=None parameter and the \" Risk level: {risk}.\" suffix, the TQ-8 release gate, the test names, and the branch names. The conclusion that no secrets are required or granted matches the tool view (tool:repo-access) exactly. It is also consistent with the code: explain.py builds a request and makes no network call, and models.json holds only provider, model and max_tokens. Against the workbook outcome, the step correctly finds that required and granted access are both empty, so no access request is needed. The remaining points are minor: the stray tool-result line, one unlabelled environment row, and loose citation placement."
+}

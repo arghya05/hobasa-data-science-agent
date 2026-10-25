@@ -1,0 +1,22 @@
+{
+  "unsupported": [
+    {
+      "text": "feat.tasks was read through context_get (revision b0fd4d2, receipt sha256 bc7702bf74b40968)",
+      "why": "The revision b0fd4d2 is in record:brief, but the receipt hash 'bc7702bf74b40968' does not appear in any input, tool view or file the agent read. No saved context_get response was provided to confirm it, so this is an unsourced number."
+    }
+  ],
+  "improvements": [
+    "Line 33, 'Neither task adds an outbound call from ap_forecast': the code supports this. explain.py only builds and returns a request dict and makes no network call, and models.json names provider 'acme-llm'. Cite file:ap_forecast/src/ap_forecast/explain.py and file:ap_forecast/src/ap_forecast/models.json here, not only feat.tasks.",
+    "Line 34, 'Whatever sends the explanation request to acme-llm needs a provider credential': no source states this; it is an inference. Label it as an assumption in the text, not only through SSQ-1.",
+    "Remove the stray trailing line '[Tool result] [ap_forecast] Tool registry: no secrets required or granted (permission table)'. It is a leaked tool artefact, not part of the document.",
+    "Section 2 adds a 'Local / CI' environment that no source names; feat.tasks section 2 names only the CI bar and the main/dev/feature branches. Say that this row is the agent's framing.",
+    "TSK-03 row: the claim that risk.py imports only predict_delay_days comes from feat.tasks, but the row also cites tool:repo-access, which says nothing about imports. Keep the citations specific to each claim."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I read the output, feat.tasks, and the ap_forecast files (CLAUDE.md, explain.py, models.json, predict.py, tests/test_forecast.py). The output's main conclusion matches the tool view: no secrets are required or granted for ap_forecast in any environment, so no access request is needed. Its task details match feat.tasks for TSK-03 and TSK-04: vendor_risk does not use the LLM, the risk parameter only appends text to the prompt, TQ-8 gates release rather than coding, and the test names are correct. The previous refusal was for citing files the agent had not read. This output cites no file: sources at all, so that problem is gone, but the 'no outbound call' claim would be stronger with code citations. The only unsupported item is the context_get receipt hash, which appears in no source. Secret names are handled correctly: no values or key names appear, and the restricted permission table is used only through the tool view."
+}
