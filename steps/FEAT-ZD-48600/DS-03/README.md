@@ -1,58 +1,64 @@
-# DS-03 Database changes (Data Science agent)
+# DS-03 · Database changes
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Task creation, or any re-entry trigger ¹  
-**Action:** Check the required database changes are completed  
-**Outcome expected:** Required Database changes are completed
+**Agent:** Data Science · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** Developer: approve by sim.developer
 
-## Inputs (what the agent was given)
+**What this step does:** Check the required database changes are completed
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** Required Database changes are completed
+
+**Started by:** Task creation, or any re-entry trigger ¹
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-03/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| feat.design | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-03/feat.design.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md | 722a98f | DES-02 |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-03/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `feat.design` | HLD, LLD and contracts | Design agent · DES-02 | [input copy](https://github.com/arghya05/hobasa-data-science-agent/blob/main/inputs/FEAT-ZD-48600/DS-03/feat.design.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.design.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-02_feat-design.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-02_feat-design.pdf) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.db_changes | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.db_changes.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.db_changes` | Completed database changes | [Markdown](https://github.com/arghya05/hobasa-data-science-agent/blob/main/outputs/FEAT-ZD-48600/task.db_changes.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-science-agent/main/docs/FEAT-ZD-48600/DS-03_task-db_changes.html) · [PDF](https://github.com/arghya05/hobasa-data-science-agent/blob/main/docs/FEAT-ZD-48600/DS-03_task-db_changes.pdf) |
 
-## Code
-
-Repository `ap-forecast-sample`, branch `feature/story`, commit `d67e866`
+**Code:** repository [ap-forecast-sample](https://github.com/arghya05/ap-forecast-sample) · branch [feature/story](https://github.com/arghya05/ap-forecast-sample/tree/feature/story) · commit [d67e866](https://github.com/arghya05/ap-forecast-sample/commit/d67e866)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 4} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- E-7 says a search of the ap_forecast checkout for database, SQL, SQLite, SQLAlchemy, psycopg and migration terms found no match. I re-ran that search outside .codegraph/ and it also found nothing, so the claim is true. But the spine did not record that search as a tool result, and the claim cites only predict.py and explain.py. Name the search (the terms and the scope, with .codegraph/ excluded) or cite tool:repo-access alone, so a reviewer can repeat it.
+- E-9 could add that predict_delay_days counts negative delays as 0 (predict.py line 8). This does not change the finding but describes the function more precisely.
+- Section 4 says that adding storage later would mean re-running DS-03. That is a recommendation, not a rule stated in any source; mark it as agent judgement.
+
 ## How the agent worked
 
-- Approach: I read both contracted inputs (feat.tasks, feat.design) to find any storage needs for the Data Science lane (TSK-03, TSK-04 in ap_forecast). Then I checked the repository directly: I listed its files, searched it for database and migration terms, and read predict.py and explain.py. The design puts storage, databases and schema migration out of scope, and the repository has no database, so no database change is required and the outcome is met. The output path already held an earlier draft labelled 'attempt 3' that ended with a stray tool-result line. I read it first, then replaced it with a clean attempt-1 file. I could not run shell commands (the G9 hook blocks Bash for DS-03), so I used Glob, Grep and Read instead.
-- Tools used: Skill:data-science-steps, Read, Glob, Grep, Write
-- Helper subagents: none
-- Connector calls: none
-
-## Attempts (checks before any person saw the output)
-
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- The last line of the file, '[Tool result] [ap_forecast] No database in this repository's architecture; no migrations required', has no attribution and does not repeat the brief's tool view word for word. The brief says 'ap_forecast has no database; no migrations exist or are required'. Remove the line, or quote the tool view exactly and cite it as tool:repo-access.
-- Section 2, 'Tracked source files': this row covers only src/ap_forecast. The repository also holds ci.py, CLAUDE.md, README.md and tests/ (test_forecast.py, __init__.py). Listing the whole repository, or saying the scan was limited to the source package, would make the 'no migration folder, schema or SQL file' finding easier to verify. The finding is still true for the whole repository.
-- Section 2, 'Database usage in code' cites 'file:ap_forecast (search)'. This is a search, not a file, so it cannot be cited as a GitHub file. Name the search terms and scope as an agent check, or cite the specific files that were read.
-- Section 4, the third re-entry trigger ('moves configuration out of models.json into a store') goes beyond feat.design A8, which lists only 'a provider or model change'. Mark it as agent judgement.
-- The output could state that the Data Science lane needs no DBA or infrastructure hand-off, and cite record:memory or the DE lane's matching DS-03/DE-03 record if one exists, so the gate can see that the 'no database' position matches the other lanes.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- **Approach:** DS-03 asks me to confirm that any required database changes are done. I read both contracted inputs. In feat.design I checked whether the HLD/LLD adds storage, migrations or new technology (sections A1, A5, A7, A8, B2). In feat.tasks I checked the scope of the two ap_forecast tasks, TSK-03 and TSK-04. I then checked the ap_forecast checkout against the tool view: a case-insensitive search for database, SQL and migration terms, plus a read of predict.py, explain.py, __init__.py and the .codegraph/.gitignore. My shell command was denied by the G9 hook, so I used Read, Grep and Glob instead. All sources agree that no database change is required. The output records this as an empty change list with evidence, so the outcome is met.
+- **Tools used:** Skill (data-science-steps), Read, Grep, Glob, Write
+- **Helper subagents:** none
+- **Connector calls:** none
 
 ## Human evaluation
 
-| Role | By | Decision | Scores | Comment or reason |
+| Role | By | Decision | Scores (correct, complete, grounded, useful) | Comment or reason |
 |---|---|---|---|---|
 | Developer | sim.developer | approve | — | automated checks and the independent judge passed |
+
+## Files in this folder (audit trail)
+
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved

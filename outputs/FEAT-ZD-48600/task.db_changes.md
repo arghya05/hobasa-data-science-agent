@@ -1,60 +1,57 @@
-# task.db_changes: FEAT-ZD-48600 (Data Science lane, ap_forecast)
+# task.db_changes: FEAT-ZD-48600
 
-DS-03 Database changes (attempt 1). Workbook action: check the required database changes are completed.
-
-**Result: the Data Science lane needs no database change, so nothing is outstanding. The step outcome ("Required database changes are completed") is met because there are no changes to make.**
+Database changes check for the Data Science lane (ap_forecast) of FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is DS-03 Database changes (attempt 1).
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
 | Step | DS-03 Database changes (attempt 1) | record:brief |
-| Lane / repository | Data Science / ap_forecast | feat.tasks (section 1, TSK-03, TSK-04) |
-| Tasks in scope | TSK-03 (STORY-03, `risk.vendor_risk`), TSK-04 (STORY-04, `build_explanation_request(..., risk=None)`) | feat.tasks (sections 1, 3) |
+| Owner / gate | Developer / automated checks, independent judge, sampled human evaluation | record:brief |
+| Repository | ap_forecast (Data Science lane) | feat.tasks (section 1, TSK-03, TSK-04) |
+| Tasks in scope | TSK-03 (STORY-03, `risk.vendor_risk`), TSK-04 (STORY-04, `explain.build_explanation_request(..., risk=None)`) | feat.tasks (section 1) |
 | Inputs | feat.tasks (b0fd4d2), feat.design (722a98f) | record:brief |
 
-## 1. What the design says about storage
+## 1. Result
 
-| Check | Finding | Source |
+**No database change is required for the Data Science lane, and none is outstanding. The outcome "Required database changes are completed" is met: the set of required changes is empty.**
+
+## 2. Evidence
+
+| # | Check | Finding | Source |
+|---|---|---|---|
+| E-1 | Does the design add storage? | The HLD boundary puts "Storage, database, schema migration" out of this design. The data changes are one new record key `paid_date`, one new reject reason `'paid_date'`, an in-memory delay history, risk map and overdue rows, and the CT-1 JSON | feat.design (A1) |
+| E-2 | Does the design allow new technology or storage? | DD-1: "No new repository, service, runtime, library or storage." Only the Python 3.9 standard library and Node.js 22 CommonJS | feat.design (A7, DD-1) |
+| E-3 | Are the new functions pure? | NF-10: every new function is pure and in-memory, with no I/O, no network and no mutation of inputs | feat.design (A5, NF-10) |
+| E-4 | Would storage reopen the platform design? | "any storage or network call from the libraries" is a DES-01 re-entry trigger; the design triggers none of them | feat.design (A8) |
+| E-5 | What does TSK-03 change? | New `src/ap_forecast/risk.py`, `__init__.py` (import, `__all__`, version step) and new `tests/test_risk.py`. Rule only: no LLM, no network, no `models.json` read | feat.tasks (TSK-03); feat.design (B2.1, B2.2) |
+| E-6 | What does TSK-04 change? | `src/ap_forecast/explain.py` and `tests/test_forecast.py`; `models.json` must not change | feat.tasks (TSK-04); feat.design (B2.1) |
+| E-7 | Does ap_forecast use a database today? | No. The repository view states ap_forecast has no database and no migrations exist or are required. A search of the checkout for database, SQL, SQLite, SQLAlchemy, psycopg and migration terms found no match | tool:repo-access; file:ap_forecast/src/ap_forecast/predict.py; file:ap_forecast/src/ap_forecast/explain.py |
+| E-8 | What persistent data does ap_forecast read? | Only `models.json`, a JSON configuration file read by `explain.load_config()` (provider, model, `max_tokens`). It is configuration, not a database, and it is unchanged by this feature | file:ap_forecast/src/ap_forecast/explain.py; feat.design (B2.1) |
+| E-9 | Is `predict_delay_days` stateful? | No. It computes the rounded mean of the given history in memory, with no I/O | file:ap_forecast/src/ap_forecast/predict.py |
+| E-10 | Is the `.codegraph/` database part of the product? | No. It is a local code-intelligence index; its `.gitignore` ignores everything except itself, so it is never committed and is not an application database | file:ap_forecast/.codegraph/.gitignore |
+
+## 3. Database change list
+
+| Change | Type | Status |
 |---|---|---|
-| Data boundary of the feature | "Storage, database, schema migration" is listed as **out of this design**. The in-scope data is one new record key `paid_date`, one new reject reason `'paid_date'`, an in-memory delay history, risk map and overdue rows, and the CT-1 JSON | feat.design (A1, Data row) |
-| Technology | No new repository, service, runtime, library or storage; only the Python 3.9 standard library and Node.js 22 CommonJS (DD-1) | feat.design (A7, DD-1); feat.tasks (intro) |
-| Purity | Every new function is pure and in-memory: no I/O, no network, no mutation of inputs (NF-10) | feat.design (A5, NF-10) |
-| Platform trigger | "any storage or network call from the libraries" would reopen DES-01; the design triggers none | feat.design (A8) |
-| ap_forecast modules | New `src/ap_forecast/risk.py`; additive `risk=None` in `explain.py`; `__init__.py` export and version step; `predict.py` and `models.json` unchanged | feat.design (B2.1) |
-| ap_forecast data structures | `history` (iterable of `int`), risk level (`str`), explanation request (`dict`), all held in memory | feat.design (B2.3) |
-| TSK-03 constraints | No LLM, no network, no `models.json` read | feat.tasks (TSK-03 Goal) |
-| TSK-04 constraints | Provider, model and `max_tokens` still come from `config or load_config()`; `models.json` must not change | feat.tasks (TSK-04 Must not change); feat.design (B2.2) |
-| Package version today | ap_forecast `0.9.0`; the version step is owned by TSK-03. This is a package version, not a schema version | feat.design (B2 heading); feat.tasks (section 2) |
+| None | — | Not required (sections 1 and 2) |
 
-## 2. What the repository holds today
+No schema, table, index, migration script, seed data, grant or DBA ticket is needed for TSK-03 or TSK-04. Nothing waits on infra or DBAs for this lane.
 
-| Check | Finding | Source |
-|---|---|---|
-| Database or migrations | ap_forecast has no database; no migrations exist or are required | tool:repo-access |
-| Tracked source files | `src/ap_forecast/__init__.py`, `explain.py`, `predict.py`, `models.json`; no migration folder, schema or SQL file | file:ap_forecast/src/ap_forecast (directory listing) |
-| Database usage in code | A case-insensitive search of the repository for `sqlite`, `sqlalchemy`, `psycopg`, `migrat`, `database` and `CREATE TABLE` found no match | file:ap_forecast (search) |
-| `predict_delay_days` | Pure computation over the given history (rounded mean, negatives count as 0); no storage | file:ap_forecast/src/ap_forecast/predict.py |
-| `build_explanation_request` | Reads only the packaged `models.json` configuration file through `load_config()`; it does not touch a database | file:ap_forecast/src/ap_forecast/explain.py |
+## 4. Impact on the next steps
 
-## 3. Required database changes
+- DS-04 (components) and DS-05 (coding) can proceed without a database prerequisite.
+- If a later change to the design introduces storage for delay history or risk levels, that is a DES-01 re-entry (feat.design A8), and DS-03 must be re-run.
 
-| # | Change | Status |
-|---|---|---|
-| — | None required by TSK-03 or TSK-04 | Complete (nothing to do) |
+## 5. Out of scope for this lane
 
-The Data Science lane needs nothing from DBAs or infrastructure. This step adds no migration, schema, seed data or connection secret (feat.design A1, DD-1; tool:repo-access).
+The other lanes (ap_pipeline, ap_aging, ap_portal) are not checked here. The design states the same position for the whole feature (no storage, database or schema migration; feat.design A1, DD-1), but each lane confirms its own repository in its own step.
 
-## 4. Re-entry triggers
+## 6. Open questions
 
-Re-run this check if any of the following appears. Each would bring storage into ap_forecast and also reopen DES-01 (feat.design A8):
-
-- `vendor_risk` results or delay histories are to be persisted instead of computed in memory.
-- The production wiring of the stages (open question DQ-1 in feat.design D3) introduces a store or service.
-- A provider or model change (PQ-5, TQ-8) moves configuration out of `models.json` into a store.
-
-## 5. Open questions
-
-None new. The carried design questions (DQ-1 to DQ-5, TQ-1 to TQ-11) are unchanged, and none of them concerns a database for this lane.
+None. No blocking question.
 
 
+<!-- tool results recorded by the spine -->
+## Tool results (recorded by the spine from the real tools)
 [Tool result] [ap_forecast] No database in this repository's architecture; no migrations required
