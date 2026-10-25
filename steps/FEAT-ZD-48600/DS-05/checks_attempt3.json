@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"This step's tool permissions allow only the CI command and read-only git, and the new tests are DS-06 work.\" (No source states this step's tool permission set. record:brief tells the agent to run `/usr/bin/python3 ci.py` and not to commit or push, but it never mentions )"
+  ]
+}
