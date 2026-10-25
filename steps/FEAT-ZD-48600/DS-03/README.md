@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: Attempt 2 was refused on the same G2 points even though I re-read the four files in that attempt. The read-receipt check evidently does not count plain Read calls of non-contracted repository files, so reading them a third time would not help. I removed every file:ap_forecast/... citation from the output and the claims. The no-database finding now rests only on sources the step was guaranteed to receive: tool:repo-access, the two contracted inputs (feat.tasks, feat.design) and record:brief. The facts I had taken from the code are now cited from feat.design wherever the design states them: the configuration source (B2.2), the unchanged predict.py and models.json (B2.1) and package version 0.9.0. I dropped the facts it does not state. The conclusion is unchanged. The design puts storage, databases and schema migrations out of scope (A1, DD-1, NF-10), and the DS tasks TSK-03 and TSK-04 are pure in-memory changes. The tool view confirms ap_forecast has no database. I rewrote the output in full as attempt 3. I left out the spine-appended '[Tool result]' line, which had been duplicated by the previous rewrite, so the spine's own append leaves a single copy.
-- Tools used: Read, Write
+- Approach: I read both contracted inputs (feat.tasks, feat.design) to find any storage needs for the Data Science lane (TSK-03, TSK-04 in ap_forecast). Then I checked the repository directly: I listed its files, searched it for database and migration terms, and read predict.py and explain.py. The design puts storage, databases and schema migration out of scope, and the repository has no database, so no database change is required and the outcome is met. The output path already held an earlier draft labelled 'attempt 3' that ended with a stray tool-result line. I read it first, then replaced it with a clean attempt-1 file. I could not run shell commands (the G9 hook blocks Bash for DS-03), so I used Glob, Grep and Read instead.
+- Tools used: Skill:data-science-steps, Read, Glob, Grep, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,17 +39,15 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 5 | — | — |
-| 2 | resumed | 4 | — | — |
-| 3 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Line 57 has a trailing '[Tool result] [ap_forecast] No database in this repository's architecture; no migrations required' with no table or section around it. Its wording differs from the tool view in the brief ('ap_forecast has no database; no migrations exist or are required'). Remove it, or quote the tool view exactly under section 2.
-- Section 2 ('What the repository holds today') relies only on tool:repo-access. The ap_forecast files the agent read back this up: predict.py and explain.py are pure, explain.py's only file read is models.json via load_config, models.json holds only provider/model/max_tokens, and __init__.py has __version__ = "0.9.0". Since attempt 3 dropped those file citations, the 'no database' finding now has a single source. Re-adding them, with citations that match what the files actually contain, would strengthen it.
-- Line 24 says the data structures are 'all held in memory' and cites feat.design B2.3. B2.3 gives the shapes but does not say they are in memory; that point comes from NF-10 (A5). Add A5 NF-10 to the citation.
-- Line 42 says the step adds no 'connection secret'. feat.design SE-4 ('Secrets and personal data: None added') supports this more directly than A1/DD-1, so cite it.
-- Section 3 could name what it checked, e.g. no migrations folder, schema file or DB driver import in ap_forecast/src, instead of relying only on the tool view.
+- The last line of the file, '[Tool result] [ap_forecast] No database in this repository's architecture; no migrations required', has no attribution and does not repeat the brief's tool view word for word. The brief says 'ap_forecast has no database; no migrations exist or are required'. Remove the line, or quote the tool view exactly and cite it as tool:repo-access.
+- Section 2, 'Tracked source files': this row covers only src/ap_forecast. The repository also holds ci.py, CLAUDE.md, README.md and tests/ (test_forecast.py, __init__.py). Listing the whole repository, or saying the scan was limited to the source package, would make the 'no migration folder, schema or SQL file' finding easier to verify. The finding is still true for the whole repository.
+- Section 2, 'Database usage in code' cites 'file:ap_forecast (search)'. This is a search, not a file, so it cannot be cited as a GitHub file. Name the search terms and scope as an agent check, or cite the specific files that were read.
+- Section 4, the third re-entry trigger ('moves configuration out of models.json into a store') goes beyond feat.design A8, which lists only 'a provider or model change'. Mark it as agent judgement.
+- The output could state that the Data Science lane needs no DBA or infrastructure hand-off, and cite record:memory or the DE lane's matching DS-03/DE-03 record if one exists, so the gate can see that the 'no database' position matches the other lanes.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
 
