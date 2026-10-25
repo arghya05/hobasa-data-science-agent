@@ -8,21 +8,21 @@ Access for the secrets in all the environments ²
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- task.code (Code changes on the working branch): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/task.code.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.code.md at commit 286af9a)
+- task.code (Code changes on the working branch): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/task.code.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.code.md at commit ef38c06)
 - feat.stories (Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision)): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/feat.stories.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md at commit 0590ea4)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.unit_tests (Unit tests and coverage (≥90%)): write `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.unit_tests.md`
 
 ## Code
-Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: tests/. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: tests/. Understand before you change: the repository is indexed with CodeGraph. Before editing, use it (MCP tools codegraph_explore and codegraph_node with projectPath `ap-forecast-sample`, or `codegraph explore <symbols>`, `codegraph impact <symbol>`, `codegraph callers <symbol>`) to read the exact source of what you change, its callers and callees and the blast radius. After editing, run `codegraph sync` and `codegraph affected <changed files>` to find the tests your change touches, and run them through the CI. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`, `codegraph explore`, `codegraph node`, `codegraph callers`, `codegraph callees`, `codegraph impact`, `codegraph affected`, `codegraph query`, `codegraph files`, `codegraph status`, `codegraph sync`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo)
 --- ap_forecast/src/ap_forecast/__init__.py ---
-"""AP forecast: predicted payment delay, rule-based vendor risk level and an LLM explanation request."""
+"""AP forecast: predicted payment delay, a rule-based vendor risk level and an LLM explanation request."""
 from .predict import predict_delay_days
 from .explain import build_explanation_request
 from .risk import vendor_risk
@@ -43,10 +43,10 @@ def load_config():
 
 
 def build_explanation_request(vendor: str, predicted_days: int, config=None, risk=None) -> dict:
-    """Request dict for the configured provider. When risk is given (not None), the prompt ends with ' Risk level: <risk>.'
+    """Request dict for the configured provider. risk (STORY-04) is optional and last, so existing calls are unchanged.
 
-    Without risk (or with risk=None) the request is exactly as before. Provider, model and max_tokens always come from
-    config or models.json.
+    When risk is not None the prompt ends with ' Risk level: <risk>.'; otherwise the request is exactly as before.
+    Provider, model and max_tokens always come from config or models.json.
     """
     cfg = config or load_config()
     prompt = f"Explain in one sentence why vendor {vendor} is predicted to be paid {predicted_days} days late."
@@ -74,12 +74,16 @@ def predict_delay_days(history: Iterable[int]) -> int:
     return round(mean(values)) if values else 0
 
 --- ap_forecast/src/ap_forecast/risk.py ---
-"""Rule-based vendor payment-risk level from the predicted delay (STORY-03). No LLM call and no models.json read."""
+"""Rule-based vendor payment-risk level from the predicted delay (STORY-03). No LLM, no network, no config read.
+
+The rule is a fixed, auditable threshold check on predict_delay_days, so every level can be traced to the vendor's
+delay history. This module imports only predict, never explain, so the rule cannot reach the LLM request path.
+"""
 from typing import Iterable
 
 from .predict import predict_delay_days
 
-# Thresholds in days, compared with strict ">" on the rounded prediction: exactly 30 is 'medium', exactly 10 is 'low'.
+# Thresholds in days on the rounded prediction; strict '>' so exactly 30 is 'medium' and exactly 10 is 'low'.
 HIGH_ABOVE_DAYS = 30
 MEDIUM_ABOVE_DAYS = 10
 
@@ -87,13 +91,16 @@ MEDIUM_ABOVE_DAYS = 10
 def vendor_risk(history: Iterable[int]) -> str:
     """'high' if the predicted delay is above HIGH_ABOVE_DAYS, 'medium' if above MEDIUM_ABOVE_DAYS, else 'low'.
 
-    history is one vendor's delay days (for example one value of ap_pipeline's delays_by_vendor). It is read once,
-    through predict_delay_days, so an empty history or early payments only (negative delays) give 'low'.
+    history is one vendor's delay days (ap_pipeline delays_by_vendor value). An empty history and early payments
+    only (negative delays, counted as 0 by predict_delay_days) both give 'low'.
     """
+    # Predict once and keep the result: a generator history is consumed on the first pass.
     days = predict_delay_days(history)
     if days > HIGH_ABOVE_DAYS:
         return "high"
-    return "medium" if days > MEDIUM_ABOVE_DAYS else "low"
+    if days > MEDIUM_ABOVE_DAYS:
+        return "medium"
+    return "low"
 
 --- ap_forecast/tests/__init__.py ---
 
@@ -123,4 +130,4 @@ if __name__ == "__main__":
     unittest.main()
 
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.

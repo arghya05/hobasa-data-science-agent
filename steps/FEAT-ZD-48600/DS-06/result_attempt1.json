@@ -1,70 +1,74 @@
 {
   "structured": {
-    "approach": "Loaded the data-science-steps skill for DS-06, then read task.code and feat.stories. task.code plans CMP-4 (a new tests/test_risk.py with five named tests) and CMP-5 (two tests added to tests/test_forecast.py), and lists the missed lines. I read ci.py to see how tests are found and how coverage is measured. I wrote tests that map one-to-one to AC-03.1\u2013AC-03.8 and AC-04.1\u2013AC-04.5. Following lesson L-007, they test the 30 and 10 boundaries explicitly, including rounded-mean cases. They also check that vendor_risk never touches load_config, which is mocked. I added one extra test showing any iterable is accepted. CI passed on the first run. git status confirmed that only files under tests/ changed in this step. Then I wrote task.unit_tests.md with the AC mapping, the verbatim CI output, the secrets findings and the open questions. Shell use was limited to the allowed commands: ci.py and git status.",
+    "approach": "I loaded the data-science-steps skill for DS-06, then read both contracted inputs: task.code, which lists the DS-05 changes C-1 to C-3 and the planned tests C-4 and C-5, and feat.stories, which has AC-03.1 to AC-03.8 and AC-04.1 to AC-04.5. I used CodeGraph to read the exact source of vendor_risk, build_explanation_request, load_config and predict_delay_days and to see their blast radius. It showed that vendor_risk and load_config had no covering tests. I read ci.py to see the gate. feat.stories SA-6 allows new test files, so I added two (tests/test_risk.py for STORY-03 and tests/test_explain_risk.py for STORY-04) and left tests/test_forecast.py unchanged. Each acceptance criterion has at least one named test. The boundary days 30 and 10 are tested explicitly (lesson L-007), along with rounded-prediction cases, a generator input and the no-LLM, no-config isolation (patched load_config and an AST import check). I ran codegraph sync and codegraph affected, which listed no affected tests, so I ran the full suite through `/usr/bin/python3 ci.py`. It passed on the first run. I then wrote task.unit_tests.md with an AC-to-test map, the CI results, what is deliberately left untested and the open questions carried forward. I changed no source files and made no commit.",
     "tools_used": [
-      "Skill (data-science-steps)",
+      "Skill:data-science-steps",
       "Read",
       "Write",
-      "Edit",
-      "Bash (/usr/bin/python3 ci.py, git status)"
+      "Bash:codegraph explore",
+      "Bash:codegraph sync",
+      "Bash:codegraph affected",
+      "Bash:/usr/bin/python3 ci.py",
+      "Bash:git status"
     ],
     "claims": [
       {
-        "text": "A new tests/test_risk.py adds VendorRiskTest with 6 tests for vendor_risk, covering AC-03.1 to AC-03.8, including the exact 30 and 10 boundaries.",
-        "source": "file:ap_forecast/tests/test_risk.py; feat.stories; record:memory"
-      },
-      {
-        "text": "tests/test_forecast.py gains test_request_with_risk and test_request_without_risk_unchanged for AC-04.1 to AC-04.5; the 3 existing tests are unchanged.",
-        "source": "file:ap_forecast/tests/test_forecast.py; feat.stories; tool:repo"
-      },
-      {
-        "text": "Boundary tests run on the rounded prediction: predict_delay_days([30, 31]) is 30, which gives 'medium', and predict_delay_days([10, 11]) is 10, which gives 'low'.",
-        "source": "file:ap_forecast/tests/test_risk.py; tool:ci"
-      },
-      {
-        "text": "After this step the CI run reports compile true, 11 tests run, 0 failures, 0 errors, coverage 100.0, no static issues and passed true.",
-        "source": "tool:ci"
-      },
-      {
-        "text": "Before this step, CI failed only on coverage: 83.3, with risk.py lines 17-20 and explain.py line 21 not covered.",
-        "source": "task.code"
-      },
-      {
-        "text": "The CI coverage gate is 90%.",
+        "text": "The repository CI gates coverage of src/ap_forecast at COVERAGE_MIN = 90.0 and also checks compile, unit tests and static issues.",
         "source": "file:ap_forecast/ci.py"
       },
       {
-        "text": "The tests need no secret, credential or network call in any environment; models.json holds only provider, model and max_tokens.",
-        "source": "task.code; tool:repo"
+        "text": "After the new tests were added, `/usr/bin/python3 ci.py` passed: compile true, 25 tests run, 0 failures, 0 errors, coverage 100.0, no static issues, exit code 0.",
+        "source": "tool:ci"
       },
       {
-        "text": "Per feat.stories SA-6, a lane may add new test files instead of using the existing one; task.code plans CMP-4 as a new tests/test_risk.py.",
-        "source": "feat.stories; task.code"
+        "text": "Each module has 100% line coverage: __init__.py 5 statements, explain.py 11, predict.py 5, risk.py 11, 32 in total with 0 missed.",
+        "source": "tool:ci"
+      },
+      {
+        "text": "Before this step, vendor_risk and load_config had no covering tests, and no existing test called vendor_risk or passed risk.",
+        "source": "mcp:codegraph; task.code"
+      },
+      {
+        "text": "vendor_risk returns 'high' above HIGH_ABOVE_DAYS = 30, 'medium' above MEDIUM_ABOVE_DAYS = 10 and 'low' otherwise, using strict '>' on predict_delay_days(history). The tests check exactly 30 \u2192 'medium' and exactly 10 \u2192 'low' (AC-03.2, AC-03.4).",
+        "source": "tool:repo; feat.stories; record:memory"
+      },
+      {
+        "text": "AC-03.7 (no LLM call, no network call, no models.json read) is tested by patching load_config and build_explanation_request to raise, and by checking that risk.py imports only typing and .predict.",
+        "source": "feat.stories; tool:repo"
+      },
+      {
+        "text": "AC-04.1 to AC-04.5 are each covered in tests/test_explain_risk.py: risk is appended as ' Risk level: <risk>.'; with no risk or risk=None the dict is unchanged; a positional config still binds to config; and provider, model and max_tokens come from the config or models.json.",
+        "source": "feat.stories; tool:repo"
+      },
+      {
+        "text": "New unit tests may go into new test files instead of the existing test_forecast.py (SA-6).",
+        "source": "feat.stories"
+      },
+      {
+        "text": "This step may change only tests/. The source files, ci.py and tests/test_forecast.py were not modified here.",
+        "source": "record:brief"
+      },
+      {
+        "text": "The version 0.10.0 is not tested, because it is still open as DSQ-1 for the Developer.",
+        "source": "task.code"
       }
     ],
     "open_questions": [
-      "CQ-DS-1: please confirm the test file split at review. The new tests/test_risk.py holds the STORY-03 tests; the STORY-04 tests are added to tests/test_forecast.py.",
-      "UT-1: AC-03.5 (PQ-1), AC-03.6 (TQ-5) and AC-04.5 (TQ-4) are tested against interim answers. If any answer changes, the matching assertion must change too.",
-      "Carried from task.code, unchanged: CQ-C2 (version 0.10.0), CQ-DS-3, RAQ-1, TQ-8, PQ-5."
+      "DSQ-1 (non-blocking, Developer): confirm 0.10.0 as the minor version step from 0.9.0. No test pins the version until this is confirmed.",
+      "DSQ-2 (non-blocking, Developer): this step meets the coverage gate in DS-06 (100.0 against 90.0). Please confirm this closes DSQ-2.",
+      "PQ-1, TQ-4, TQ-5 (non-blocking, PM / Architect): the tests for AC-03.5, AC-03.6 and AC-04.5 follow the interim design. If an answer differs, only those tests change.",
+      "TQ-8 and PQ-5 (non-blocking, Architect / PM): whether the risk label may be sent to acme-llm, and the order of this change relative to PROV-ACME-2026-11. Both are carried unchanged.",
+      "SSQ-2 (non-blocking): confirmation of secrets access in each environment. The tests need no secret and no network."
     ],
-    "summary": "CI now passes for ap_forecast: 11 tests, 0 failures, 100.0% coverage (the gate is 90%), no static issues. I added 6 vendor_risk tests in a new tests/test_risk.py and 2 build_explanation_request tests in tests/test_forecast.py. Together they cover all 13 STORY-03 and STORY-04 acceptance criteria, including the exact 30 and 10 boundary days. This closes the coverage gap left after DS-05 (CQ-C1). Only files under tests/ changed in this step, and nothing is committed. The output is in task.unit_tests.md. There are no blocking questions."
+    "summary": "I added 22 unit tests for STORY-03 (vendor_risk) and STORY-04 (the risk parameter) in two new files, tests/test_risk.py and tests/test_explain_risk.py, and mapped each acceptance criterion to its test. The boundary days 30 and 10 are tested explicitly. The CI passes: 25 tests with 0 failures, 100.0% coverage against the 90.0 gate, and no static issues. task.unit_tests.md is written. No source changes were made and nothing was committed."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
     "num_turns": 13,
-    "session_id": "b6be7b66-ed5b-4669-946c-d14b82415342",
-    "total_cost_usd": 0.7174230000000001,
-    "permission_denials": [
-      {
-        "tool_name": "Bash",
-        "tool_use_id": "toolu_01KBcacbNsfnVJ16xnGdpvqT",
-        "tool_input": {
-          "command": "ls -a && cat ci.py && ls tests",
-          "description": "List repo and show CI script"
-        }
-      }
-    ],
-    "result": "{\"approach\":\"Loaded the data-science-steps skill for DS-06, then read task.code and feat.stories. task.code plans CMP-4 (a new tests/test_risk.py with five named tests) and CMP-5 (two tests added to tests/test_forecast.py), and lists the missed lines. I read ci.py to see how tests are found and how coverage is measured. I wrote tests that map one-to-one to AC-03.1\u2013AC-03.8 and AC-04.1\u2013AC-04.5. Following lesson L-007, they test the 30 and 10 boundaries explicitly, including rounded-mean cases. They also check that vendor_risk never touches load_config, which is mocked. I added one extra test showing any iterable is accepted. CI passed on the first run. git status confirmed that only files under tests/ changed in this step. Then I wrote task.unit_tests.md with the AC mapping, the verbatim CI output, the secrets findings and the open questions. Shell use was limited to the allowed commands: ci.py and git status.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Write\",\"Edit\",\"Bash (/usr/bin/python3 ci.py, git status)\"],\"claims\":[{\"text\":\"A new tests/test_risk.py adds VendorRiskTest with 6 tests for vendor_risk, covering AC-03.1 to AC-03.8, including the exact 30 and 10 boundaries.\",\"source\":\"file:ap_forecast/tests/test_risk.py; feat.stories; record:memory\"},{\"text\":\"tests/test_forecast.py gains test_request_with_risk and test_request_without_risk_unchanged for AC-04.1 to AC-04.5; the 3 existing tests are unchanged.\",\"source\":\"file:ap_forecast/tests/test_forecast.py; feat.stories; tool:repo\"},{\"text\":\"Boundary tests run on the rounded prediction: predict_delay_days([30, 31]) is 30, which gives 'medium', and predict_delay_days([10, 11]) is 10, which gives 'low'.\",\"source\":\"file:ap_forecast/tests/test_risk.py; tool:ci\"},{\"text\":\"After this step the CI run reports compile true, 11 tests run, 0 failures, 0 errors, coverage 100.0, no static issues and passed true.\",\"source\":\"tool:ci\"},{\"text\":\"Before this step, CI failed only on coverage: 83.3, with risk.py lines 17-20 and explain.py line 21 not covered.\",\"source\":\"task.code\"},{\"text\":\"The CI coverage gate is 90%.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"The tests need no secret, credential or network call in any environment; models.json holds only provider, model and max_tokens.\",\"source\":\"task.code; tool:repo\"},{\"text\":\"Per feat.stories SA-6, a lane may add new test files instead of using the existing one; task.code plans CMP-4 as a new tests/test_risk.py.\",\"source\":\"feat.stories; task.code\"}],\"open_questions\":[\"CQ-DS-1: please confirm the test file split at review. The new tests/test_risk.py holds the STORY-03 tests; the STORY-04 tests are added to tests/test_forecast.py.\",\"UT-1: AC-03.5 (PQ-1), AC-03.6 (TQ-5) and AC-04.5 (TQ-4) are tested against interim answers. If any answer changes, the matching assertion must change too.\",\"Carried from task.code, unchanged: CQ-C2 (version 0.10.0), CQ-DS-3, RAQ-1, TQ-8, PQ-5.\"],\"summary\":\"CI now passes for ap_forecast: 11 tests, 0 failures, 100.0% coverage (the gate is 90%), no static issues. I added 6 vendor_risk tests in a new tests/test_risk.py and 2 build_explanation_request tests in tests/test_forecast.py. Together they cover all 13 STORY-03 and STORY-04 acceptance criteria, including the exact 30 and 10 boundary days. This closes the coverage gap left after DS-05 (CQ-C1). Only files under tests/ changed in this step, and nothing is committed. The output is in task.unit_tests.md. There are no blocking questions.\"}"
+    "session_id": "aaf45094-82c2-4585-93bd-9c5c375f7b40",
+    "total_cost_usd": 0.7949558000000001,
+    "permission_denials": [],
+    "result": "{\"approach\":\"I loaded the data-science-steps skill for DS-06, then read both contracted inputs: task.code, which lists the DS-05 changes C-1 to C-3 and the planned tests C-4 and C-5, and feat.stories, which has AC-03.1 to AC-03.8 and AC-04.1 to AC-04.5. I used CodeGraph to read the exact source of vendor_risk, build_explanation_request, load_config and predict_delay_days and to see their blast radius. It showed that vendor_risk and load_config had no covering tests. I read ci.py to see the gate. feat.stories SA-6 allows new test files, so I added two (tests/test_risk.py for STORY-03 and tests/test_explain_risk.py for STORY-04) and left tests/test_forecast.py unchanged. Each acceptance criterion has at least one named test. The boundary days 30 and 10 are tested explicitly (lesson L-007), along with rounded-prediction cases, a generator input and the no-LLM, no-config isolation (patched load_config and an AST import check). I ran codegraph sync and codegraph affected, which listed no affected tests, so I ran the full suite through `/usr/bin/python3 ci.py`. It passed on the first run. I then wrote task.unit_tests.md with an AC-to-test map, the CI results, what is deliberately left untested and the open questions carried forward. I changed no source files and made no commit.\",\"tools_used\":[\"Skill:data-science-steps\",\"Read\",\"Write\",\"Bash:codegraph explore\",\"Bash:codegraph sync\",\"Bash:codegraph affected\",\"Bash:/usr/bin/python3 ci.py\",\"Bash:git status\"],\"claims\":[{\"text\":\"The repository CI gates coverage of src/ap_forecast at COVERAGE_MIN = 90.0 and also checks compile, unit tests and static issues.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"After the new tests were added, `/usr/bin/python3 ci.py` passed: compile true, 25 tests run, 0 failures, 0 errors, coverage 100.0, no static issues, exit code 0.\",\"source\":\"tool:ci\"},{\"text\":\"Each module has 100% line coverage: __init__.py 5 statements, explain.py 11, predict.py 5, risk.py 11, 32 in total with 0 missed.\",\"source\":\"tool:ci\"},{\"text\":\"Before this step, vendor_risk and load_config had no covering tests, and no existing test called vendor_risk or passed risk.\",\"source\":\"mcp:codegraph; task.code\"},{\"text\":\"vendor_risk returns 'high' above HIGH_ABOVE_DAYS = 30, 'medium' above MEDIUM_ABOVE_DAYS = 10 and 'low' otherwise, using strict '>' on predict_delay_days(history). The tests check exactly 30 \u2192 'medium' and exactly 10 \u2192 'low' (AC-03.2, AC-03.4).\",\"source\":\"tool:repo; feat.stories; record:memory\"},{\"text\":\"AC-03.7 (no LLM call, no network call, no models.json read) is tested by patching load_config and build_explanation_request to raise, and by checking that risk.py imports only typing and .predict.\",\"source\":\"feat.stories; tool:repo\"},{\"text\":\"AC-04.1 to AC-04.5 are each covered in tests/test_explain_risk.py: risk is appended as ' Risk level: <risk>.'; with no risk or risk=None the dict is unchanged; a positional config still binds to config; and provider, model and max_tokens come from the config or models.json.\",\"source\":\"feat.stories; tool:repo\"},{\"text\":\"New unit tests may go into new test files instead of the existing test_forecast.py (SA-6).\",\"source\":\"feat.stories\"},{\"text\":\"This step may change only tests/. The source files, ci.py and tests/test_forecast.py were not modified here.\",\"source\":\"record:brief\"},{\"text\":\"The version 0.10.0 is not tested, because it is still open as DSQ-1 for the Developer.\",\"source\":\"task.code\"}],\"open_questions\":[\"DSQ-1 (non-blocking, Developer): confirm 0.10.0 as the minor version step from 0.9.0. No test pins the version until this is confirmed.\",\"DSQ-2 (non-blocking, Developer): this step meets the coverage gate in DS-06 (100.0 against 90.0). Please confirm this closes DSQ-2.\",\"PQ-1, TQ-4, TQ-5 (non-blocking, PM / Architect): the tests for AC-03.5, AC-03.6 and AC-04.5 follow the interim design. If an answer differs, only those tests change.\",\"TQ-8 and PQ-5 (non-blocking, Architect / PM): whether the risk label may be sent to acme-llm, and the order of this change relative to PROV-ACME-2026-11. Both are carried unchanged.\",\"SSQ-2 (non-blocking): confirmation of secrets access in each environment. The tests need no secret and no network.\"],\"summary\":\"I added 22 unit tests for STORY-03 (vendor_risk) and STORY-04 (the risk parameter) in two new files, tests/test_risk.py and tests/test_explain_risk.py, and mapped each acceptance criterion to its test. The boundary days 30 and 10 are tested explicitly. The CI passes: 25 tests with 0 failures, 100.0% coverage against the 90.0 gate, and no static issues. task.unit_tests.md is written. No source changes were made and nothing was committed.\"}"
   }
 }

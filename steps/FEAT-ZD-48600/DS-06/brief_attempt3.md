@@ -1,11 +1,8 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session
-G3 numbers ['100.0'] in "The CI run in this step reports compile true, 11 tests run, 0 failures, 0 errors, coverage 100.0, no" do not appear in tool:repo
-G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session
+G1 judge found an unsupported statement: "The tests avoid means that end in exactly .5, so each case shows the threshold rule clearly." (The tests in the tool view contradict this. `test_above_30_is_high` uses `[45, 60]` (mean 52.5). `test_between_10_and_30_is_medium` uses `[20, 25]` (mean 22.5).)
+G1 judge found an unsupported statement: "The only file they read is the packaged `models.json`, through `load_config`." (The tool view contradicts this. `test_module_imports_only_typing_and_predict` in tests/test_risk.py runs `Path(risk_module.__file__).read_text()`, which reads `)
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-06: Unit Test Cases (attempt 3) for FEAT-ZD-48600
@@ -18,21 +15,21 @@ Access for the secrets in all the environments ²
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- task.code (Code changes on the working branch): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/task.code.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.code.md at commit 286af9a)
+- task.code (Code changes on the working branch): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/task.code.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.code.md at commit 7b73e9c)
 - feat.stories (Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision)): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-06/feat.stories.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md at commit 0590ea4)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.unit_tests (Unit tests and coverage (≥90%)): write `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.unit_tests.md`
 
 ## Code
-Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: tests/. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: tests/. Understand before you change: the repository is indexed with CodeGraph. Before editing, use it (MCP tools codegraph_explore and codegraph_node with projectPath `ap-forecast-sample`, or `codegraph explore <symbols>`, `codegraph impact <symbol>`, `codegraph callers <symbol>`) to read the exact source of what you change, its callers and callees and the blast radius. After editing, run `codegraph sync` and `codegraph affected <changed files>` to find the tests your change touches, and run them through the CI. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`, `codegraph explore`, `codegraph node`, `codegraph callers`, `codegraph callees`, `codegraph impact`, `codegraph affected`, `codegraph query`, `codegraph files`, `codegraph status`, `codegraph sync`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo)
 --- ap_forecast/src/ap_forecast/__init__.py ---
-"""AP forecast: predicted payment delay, rule-based vendor risk level and an LLM explanation request."""
+"""AP forecast: predicted payment delay, a rule-based vendor risk level and an LLM explanation request."""
 from .predict import predict_delay_days
 from .explain import build_explanation_request
 from .risk import vendor_risk
@@ -53,10 +50,10 @@ def load_config():
 
 
 def build_explanation_request(vendor: str, predicted_days: int, config=None, risk=None) -> dict:
-    """Request dict for the configured provider. When risk is given (not None), the prompt ends with ' Risk level: <risk>.'
+    """Request dict for the configured provider. risk (STORY-04) is optional and last, so existing calls are unchanged.
 
-    Without risk (or with risk=None) the request is exactly as before. Provider, model and max_tokens always come from
-    config or models.json.
+    When risk is not None the prompt ends with ' Risk level: <risk>.'; otherwise the request is exactly as before.
+    Provider, model and max_tokens always come from config or models.json.
     """
     cfg = config or load_config()
     prompt = f"Explain in one sentence why vendor {vendor} is predicted to be paid {predicted_days} days late."
@@ -84,12 +81,16 @@ def predict_delay_days(history: Iterable[int]) -> int:
     return round(mean(values)) if values else 0
 
 --- ap_forecast/src/ap_forecast/risk.py ---
-"""Rule-based vendor payment-risk level from the predicted delay (STORY-03). No LLM call and no models.json read."""
+"""Rule-based vendor payment-risk level from the predicted delay (STORY-03). No LLM, no network, no config read.
+
+The rule is a fixed, auditable threshold check on predict_delay_days, so every level can be traced to the vendor's
+delay history. This module imports only predict, never explain, so the rule cannot reach the LLM request path.
+"""
 from typing import Iterable
 
 from .predict import predict_delay_days
 
-# Thresholds in days, compared with strict ">" on the rounded prediction: exactly 30 is 'medium', exactly 10 is 'low'.
+# Thresholds in days on the rounded prediction; strict '>' so exactly 30 is 'medium' and exactly 10 is 'low'.
 HIGH_ABOVE_DAYS = 30
 MEDIUM_ABOVE_DAYS = 10
 
@@ -97,15 +98,72 @@ MEDIUM_ABOVE_DAYS = 10
 def vendor_risk(history: Iterable[int]) -> str:
     """'high' if the predicted delay is above HIGH_ABOVE_DAYS, 'medium' if above MEDIUM_ABOVE_DAYS, else 'low'.
 
-    history is one vendor's delay days (for example one value of ap_pipeline's delays_by_vendor). It is read once,
-    through predict_delay_days, so an empty history or early payments only (negative delays) give 'low'.
+    history is one vendor's delay days (ap_pipeline delays_by_vendor value). An empty history and early payments
+    only (negative delays, counted as 0 by predict_delay_days) both give 'low'.
     """
+    # Predict once and keep the result: a generator history is consumed on the first pass.
     days = predict_delay_days(history)
     if days > HIGH_ABOVE_DAYS:
         return "high"
-    return "medium" if days > MEDIUM_ABOVE_DAYS else "low"
+    if days > MEDIUM_ABOVE_DAYS:
+        return "medium"
+    return "low"
 
 --- ap_forecast/tests/__init__.py ---
+
+--- ap_forecast/tests/test_explain_risk.py ---
+"""STORY-04: optional risk level in the explanation request (AC-04.1 to AC-04.5)."""
+import unittest
+
+from ap_forecast import build_explanation_request
+from ap_forecast.explain import load_config
+
+CFG = {"provider": "p", "model": "m", "max_tokens": 10}
+BASE = "Explain in one sentence why vendor Synthetic Vendor A is predicted to be paid 12 days late."
+
+
+class ExplanationRiskTest(unittest.TestCase):
+    def test_risk_appended_to_prompt(self):  # AC-04.1
+        for level in ("high", "medium", "low"):
+            req = build_explanation_request("Synthetic Vendor A", 12, CFG, risk=level)
+            content = req["messages"][0]["content"]
+            self.assertEqual(content, BASE + f" Risk level: {level}.")
+            self.assertTrue(content.endswith(f" Risk level: {level}."))
+
+    def test_risk_positional_fourth_argument(self):  # AC-04.1: risk is the last parameter
+        req = build_explanation_request("Synthetic Vendor A", 12, CFG, "high")
+        self.assertEqual(req["messages"][0]["content"], BASE + " Risk level: high.")
+
+    def test_without_risk_request_is_unchanged(self):  # AC-04.2
+        expected = {"provider": "p", "model": "m", "max_tokens": 10,
+                    "messages": [{"role": "user", "content": BASE}]}
+        self.assertEqual(build_explanation_request("Synthetic Vendor A", 12, CFG), expected)
+
+    def test_explicit_none_is_not_given(self):  # AC-04.5 [Pending TQ-4]
+        self.assertEqual(build_explanation_request("Synthetic Vendor A", 12, CFG, risk=None),
+                         build_explanation_request("Synthetic Vendor A", 12, CFG))
+        self.assertNotIn("Risk level", build_explanation_request("Synthetic Vendor A", 12, CFG, None)["messages"][0]["content"])
+
+    def test_existing_positional_config_call(self):  # AC-04.3
+        req = build_explanation_request("Synthetic Vendor A", 12, CFG)
+        self.assertEqual((req["provider"], req["model"], req["max_tokens"]), ("p", "m", 10))
+
+    def test_provider_model_tokens_from_config_with_risk(self):  # AC-04.4 (explicit config)
+        req = build_explanation_request("Synthetic Vendor A", 12, CFG, risk="high")
+        self.assertEqual((req["provider"], req["model"], req["max_tokens"]), ("p", "m", 10))
+        self.assertEqual(len(req["messages"]), 1)
+        self.assertEqual(req["messages"][0]["role"], "user")
+
+    def test_provider_model_tokens_from_models_json_with_risk(self):  # AC-04.4 (models.json)
+        cfg = load_config()
+        req = build_explanation_request("Synthetic Vendor A", 12, risk="medium")
+        self.assertEqual((req["provider"], req["model"], req["max_tokens"]),
+                         (cfg["provider"], cfg["model"], cfg["max_tokens"]))
+        self.assertTrue(req["messages"][0]["content"].endswith(" Risk level: medium."))
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 --- ap_forecast/tests/test_forecast.py ---
 import unittest
@@ -128,36 +186,15 @@ class ForecastTest(unittest.TestCase):
         req = build_explanation_request("V-2", 3, {"provider": "p", "model": "m", "max_tokens": 10})
         self.assertEqual((req["provider"], req["max_tokens"]), ("p", 10))
 
-    def test_request_with_risk(self):
-        # AC-04.1: today's prompt followed by ' Risk level: <risk>.'; AC-04.4: config values unchanged.
-        cfg = {"provider": "p", "model": "m", "max_tokens": 10}
-        base = "Explain in one sentence why vendor V-3 is predicted to be paid 35 days late."
-        req = build_explanation_request("V-3", 35, cfg, "high")
-        self.assertEqual(req["messages"], [{"role": "user", "content": base + " Risk level: high."}])
-        self.assertEqual((req["provider"], req["model"], req["max_tokens"]), ("p", "m", 10))
-        kw = build_explanation_request("V-3", 35, risk="medium")
-        self.assertTrue(kw["messages"][0]["content"].endswith(" Risk level: medium."))
-        self.assertEqual((kw["provider"], kw["model"], kw["max_tokens"]), ("acme-llm", "acme-text-2", 300))
-
-    def test_request_without_risk_unchanged(self):
-        # AC-04.2, AC-04.3, AC-04.5: no risk, or risk=None, gives today's request; positional config still works.
-        cfg = {"provider": "p", "model": "m", "max_tokens": 10}
-        expected = {"provider": "p", "model": "m", "max_tokens": 10,
-                    "messages": [{"role": "user", "content":
-                                  "Explain in one sentence why vendor V-4 is predicted to be paid 7 days late."}]}
-        self.assertEqual(build_explanation_request("V-4", 7, cfg), expected)
-        self.assertEqual(build_explanation_request("V-4", 7, cfg, None), expected)
-        self.assertEqual(build_explanation_request("V-4", 7, config=cfg, risk=None), expected)
-        self.assertEqual(build_explanation_request("V-4", 7), build_explanation_request("V-4", 7, risk=None))
-        self.assertNotIn("Risk level", build_explanation_request("V-4", 7)["messages"][0]["content"])
-
 
 if __name__ == "__main__":
     unittest.main()
 
 --- ap_forecast/tests/test_risk.py ---
-"""Unit tests for vendor_risk (STORY-03, AC-03.1 to AC-03.8)."""
+"""STORY-03: rule-based vendor risk level (AC-03.1 to AC-03.8). Boundaries are tested on the rounded prediction (L-007)."""
+import ast
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import ap_forecast
@@ -165,62 +202,80 @@ from ap_forecast import predict_delay_days, vendor_risk
 from ap_forecast import risk as risk_module
 
 
-class VendorRiskTest(unittest.TestCase):
-    def test_vendor_risk_levels(self):
-        # AC-03.1, AC-03.3: above 30 is 'high', above 10 and not above 30 is 'medium', otherwise 'low'.
+class VendorRiskThresholdTest(unittest.TestCase):
+    def test_above_30_is_high(self):  # AC-03.1
         self.assertEqual(vendor_risk([31]), "high")
-        self.assertEqual(vendor_risk([40, 50, 60]), "high")
-        self.assertEqual(vendor_risk([20]), "medium")
-        self.assertEqual(vendor_risk([5, 15, 25]), "medium")
-        self.assertEqual(vendor_risk([3]), "low")
+        self.assertEqual(vendor_risk([45, 60]), "high")
 
-    def test_vendor_risk_boundaries(self):
-        # AC-03.2, AC-03.4 (L-007): strict '>' on the rounded prediction.
+    def test_exactly_30_is_medium(self):  # AC-03.2
         self.assertEqual(vendor_risk([30]), "medium")
-        self.assertEqual(vendor_risk([31]), "high")
+
+    def test_between_10_and_30_is_medium(self):  # AC-03.3
+        self.assertEqual(vendor_risk([11]), "medium")
+        self.assertEqual(vendor_risk([20, 25]), "medium")
+
+    def test_exactly_10_is_low_and_11_is_medium(self):  # AC-03.4
         self.assertEqual(vendor_risk([10]), "low")
         self.assertEqual(vendor_risk([11]), "medium")
-        # The thresholds apply to the rounded prediction, not the raw mean.
-        self.assertEqual(predict_delay_days([30, 31]), 30)
-        self.assertEqual(vendor_risk([30, 31]), "medium")
-        self.assertEqual(predict_delay_days([10, 11]), 10)
-        self.assertEqual(vendor_risk([10, 11]), "low")
-        self.assertEqual(predict_delay_days([31, 32]), 32)
-        self.assertEqual(vendor_risk([31, 32]), "high")
+
+    def test_empty_history_is_low(self):  # AC-03.5 [Pending PQ-1]
+        self.assertEqual(vendor_risk([]), "low")
+
+    def test_early_payments_only_are_low(self):  # AC-03.6 [Pending TQ-5]
+        self.assertEqual(vendor_risk([-5, -20]), "low")
+
+    def test_negative_delays_count_as_zero_not_netted(self):  # AC-03.6 / predict.py: negatives count as 0
+        self.assertEqual(predict_delay_days([-100, 62]), 31)
+        self.assertEqual(vendor_risk([-100, 62]), "high")
+
+    def test_threshold_applies_to_rounded_prediction(self):  # IF-3.4 via AC-03 preamble
+        # Mean 30.33 rounds to 30 and mean 10.33 rounds to 10, so both stay below the next level.
+        self.assertEqual(vendor_risk([30, 30, 31]), "medium")
+        self.assertEqual(vendor_risk([10, 10, 11]), "low")
+        self.assertEqual(vendor_risk([31, 31, 30]), "high")
+
+    def test_generator_history(self):  # history is any Iterable[int]; predicted once
+        self.assertEqual(vendor_risk(d for d in [31, 31]), "high")
+
+    def test_constants(self):
         self.assertEqual((risk_module.HIGH_ABOVE_DAYS, risk_module.MEDIUM_ABOVE_DAYS), (30, 10))
 
-    def test_vendor_risk_empty_and_early(self):
-        # AC-03.5: empty history; AC-03.6: early payments only (negative delays count as 0).
-        self.assertEqual(vendor_risk([]), "low")
-        self.assertEqual(vendor_risk([-5, -20]), "low")
-        self.assertEqual(vendor_risk([-100, 31]), "medium")
 
-    def test_vendor_risk_accepts_any_iterable(self):
-        # history is read once, through predict_delay_days, so a generator works.
-        self.assertEqual(vendor_risk(d for d in [35, 45]), "high")
-        self.assertEqual(vendor_risk(iter([])), "low")
-
-    def test_vendor_risk_no_llm(self):
-        # AC-03.7: no models.json read and no LLM request is built.
-        with mock.patch("ap_forecast.explain.load_config") as load_config, \
-                mock.patch("ap_forecast.explain.build_explanation_request") as build:
-            for history in ([], [5], [20], [31], [-3]):
+class VendorRiskIsolationTest(unittest.TestCase):
+    def test_no_config_read_or_llm_request(self):  # AC-03.7
+        with mock.patch("ap_forecast.explain.load_config", side_effect=AssertionError("models.json read")), \
+                mock.patch("ap_forecast.explain.build_explanation_request",
+                           side_effect=AssertionError("LLM request built")):
+            for history in ([], [5], [11], [31], [-3]):
                 vendor_risk(history)
-        load_config.assert_not_called()
-        build.assert_not_called()
-        self.assertFalse(hasattr(risk_module, "load_config"))
-        self.assertFalse(hasattr(risk_module, "explain"))
 
-    def test_vendor_risk_exported(self):
-        # AC-03.8: exported in __all__ and returns only 'high', 'medium' or 'low'.
+    def test_module_imports_only_typing_and_predict(self):  # AC-03.7: no explain, network or config import
+        tree = ast.parse(Path(risk_module.__file__).read_text())
+        imported = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                imported.add(("." * node.level) + (node.module or ""))
+        self.assertEqual(imported, {"typing", ".predict"})
+
+
+class VendorRiskExportTest(unittest.TestCase):
+    def test_exported_in_all(self):  # AC-03.8
         self.assertIn("vendor_risk", ap_forecast.__all__)
         self.assertIs(ap_forecast.vendor_risk, risk_module.vendor_risk)
-        results = {vendor_risk([d]) for d in range(-10, 101)}
-        self.assertEqual(results, {"high", "medium", "low"})
+
+    def test_existing_exports_kept(self):  # NFR-4
+        for name in ("predict_delay_days", "build_explanation_request"):
+            self.assertIn(name, ap_forecast.__all__)
+
+    def test_returns_only_known_levels(self):  # AC-03.8
+        levels = {vendor_risk([d]) for d in range(-5, 61)}
+        self.assertEqual(levels, {"high", "medium", "low"})
 
 
 if __name__ == "__main__":
     unittest.main()
 
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.

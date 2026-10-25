@@ -1,0 +1,26 @@
+{
+  "unsupported": [
+    {
+      "text": "The tests avoid means that end in exactly .5, so each case shows the threshold rule clearly.",
+      "why": "The tests in the tool view contradict this. `test_above_30_is_high` uses `[45, 60]` (mean 52.5). `test_between_10_and_30_is_medium` uses `[20, 25]` (mean 22.5). The existing `test_predict` in tests/test_forecast.py uses `[-5, 5]`, which becomes `[0, 5]` (mean 2.5, rounded half-to-even to 2). So several tests have means that end in exactly .5."
+    },
+    {
+      "text": "The only file they read is the packaged `models.json`, through `load_config`.",
+      "why": "The tool view contradicts this. `test_module_imports_only_typing_and_predict` in tests/test_risk.py runs `Path(risk_module.__file__).read_text()`, which reads `src/ap_forecast/risk.py`. So the tests read at least one file besides models.json. The point that the tests need no secret and no network is still correct."
+    }
+  ],
+  "improvements": [
+    "The per-module coverage table (5/11/5/11 statements, 32 total, 0 missed), 'errors 0', 'static issues []' and 'exit code 0' all cite 'tool:ci'. The spine's recorded tool result says only '25 run, 0 failing; coverage 100.0%', and the ci.py output in the hook log was not recorded. I recounted the statements from the source using coverage.py rules and they match. Still, cite the spine-recorded result, or say these figures come from the CI coverage_report printed in this session.",
+    "Section 6 note on round-half-to-even: either add an explicit .5-mean boundary case (for example a history whose mean is 30.5 gives 'medium', and one whose mean is 10.5 gives 'low', since round(10.5) = 10). That would cover the banker's-rounding behaviour at the thresholds, in the spirit of L-007. Or reword the note to match the existing tests.",
+    "Section 7 gives owners for PQ-1/TQ-4/TQ-5 ('PM / Architect') and TQ-8/PQ-5 ('Architect / PM'), but no input states these owners per question. feat.stories only proposes the Architect for the TQ answers (SQ-3). Mark the owners as proposed, or cite where they come from.",
+    "The claim 'no source file is changed in this step (tool:repo; git status)' relies on git status output that is not recorded. Quote the short status line so the gate can check it.",
+    "The workbook action includes 'Access for the secrets in all the environments'. Section 5 covers it by reference to SSQ-2. Say explicitly that the step outcome does not depend on secrets in any environment, and name who closes SSQ-2."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked the output against task.code, feat.stories, the tool view (src and tests), ci.py and the step's hook log (hooks/DS-06_attempt2.jsonl).\n\n**Last refusal reason: now resolved.** The hook log shows that this session called mcp__codegraph__codegraph_explore. Its response matches the blast-radius sentence exactly: `vendor_risk` is covered by tests/test_risk.py, and `build_explanation_request` by tests/test_forecast.py and tests/test_explain_risk.py.\n\n**What checks out:**\n- Test counts are 15 + 7 + 3 = 25, matching the spine result of 25 run, 0 failing, 100.0% coverage.\n- The CI gate COVERAGE_MIN = 90.0 matches ci.py.\n- Every AC-to-test mapping, input value and expected result matches the test source. This includes range(-5, 61), the five histories in the isolation test, and risk=None passed by keyword and by position.\n- SA-6 (new test files are allowed), DSQ-1/0.10.0, SSQ-2 and the TQ/PQ references all match the inputs.\n\n**Two factual statements contradict the test code:**\n- The tests do not avoid .5 means: [45, 60], [20, 25] and [-5, 5] all have means ending in .5.\n- The tests read risk.py through the AST test, not only models.json.\n\nBoth are side notes. They do not change the CI result or the AC coverage, but they are factual errors in the output. The per-module statement counts are not in the recorded tool views, but they match my recount from the source, so I put them under improvements rather than unsupported."
+}

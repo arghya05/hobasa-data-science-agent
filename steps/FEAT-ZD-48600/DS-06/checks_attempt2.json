@@ -1,9 +1,6 @@
 {
   "failures": [
-    "G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/tests/test_risk.py but the agent never read that file in this session",
-    "G3 numbers ['100.0'] in \"The CI run in this step reports compile true, 11 tests run, 0 failures, 0 errors, coverage 100.0, no\" do not appear in tool:repo",
-    "G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session"
+    "G1 judge found an unsupported statement: \"The tests avoid means that end in exactly .5, so each case shows the threshold rule clearly.\" (The tests in the tool view contradict this. `test_above_30_is_high` uses `[45, 60]` (mean 52.5). `test_between_10_and_30_is_medium` uses `[20, 25]` (mean 22.5).)",
+    "G1 judge found an unsupported statement: \"The only file they read is the packaged `models.json`, through `load_config`.\" (The tool view contradicts this. `test_module_imports_only_typing_and_predict` in tests/test_risk.py runs `Path(risk_module.__file__).read_text()`, which reads `)"
   ]
 }
