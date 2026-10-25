@@ -13,10 +13,10 @@ Access for the secrets in all the environments ⁵
 |---|---|---|---|---|
 | feat.tasks | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
 | feat.stories | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.stories.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md | 0590ea4 | REQ-08 |
-| feat.prd | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.prd.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md | 908b58d | REQ-05 |
+| feat.prd | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.prd.md | final_document/e2e-run/runs/run-20261025-111239-feat-zd-48600/workspace/agents/hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md | 908b58d | REQ-05 |
 | feat.trd | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.trd.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.trd.md | 3637e51 | REQ-07 |
 | feat.design | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/feat.design.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md | 722a98f | DES-02 |
-| task.repo_access | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/task.repo_access.md | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md | c7b4be8 | DS-01 |
+| task.repo_access | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-04/task.repo_access.md | hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md | aac590a | DS-01 |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -36,8 +36,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: I followed the data-science-steps procedure for DS-04. I read all six contracted inputs: feat.tasks, feat.design, task.repo_access, and the STORY-03/04 sections of feat.stories, feat.trd and feat.prd. I also read the ap_forecast code in the step's tool view. Shell commands are blocked in this step (G9), so I listed the repository with Glob instead. From shared memory I learned that file:ap_forecast/... citations fail G2, so the code is cited only as tool:repo. I fetched DS-03's task.db_changes with context_get so it could be cited as background. I then mapped TSK-03 and TSK-04 onto the existing layers: package API, prediction rule, LLM request, config and tests. That gave five components (CMP-1 to CMP-5) inside each task's file budget, a minimum-code sketch that follows feat.design B2.2, the tests, the secrets and database position per environment, and the dependencies. A verifier subagent checked the draft against the sources. I fixed all five of its findings and its two minor items: coverage is now stated as expected rather than measured, the per-environment secrets claims are narrowed, and citations and agent-judgement labels are corrected.
-- Tools used: Skill:data-science-steps, Read, Grep, Glob, mcp__hobasa-context__context_list, mcp__hobasa-context__context_get, mcp__hobasa-context__memory_search, Agent:verifier, Write, Edit
+- Approach: I followed the data-science-steps DS-04 procedure. First I read the six contracted inputs and the ap_forecast code (the tool view plus ci.py). Then I used context_list to confirm that the DS-02 (task.secrets_scope) and DS-03 (task.db_changes) outputs are approved background, and read both to answer the secrets question for every environment. A draft from an earlier attempt was already at the output path. I read it and rewrote it in full. In the rewrite I corrected its task.repo_access revision (aac590a, not c7b4be8), its swapped RAQ-1/RAQ-2 references, and its unchecked secrets row, which now cites DS-02. A verifier subagent then flagged 4 problems: background hashes with no source, a memory claim that contradicted feat.tasks section 8, an uncited docstring suggestion, and a wrong section reference. It also flagged an inference about coverage that was not marked as such. I fixed all of these. No shell commands were run, because the G9 hook allows none in DS-04.
+- Tools used: Skill (data-science-steps), Read, Grep, Glob, mcp__hobasa-context__context_list, Agent (verifier), Write, Edit
 - Helper subagents: Agent
 - Connector calls: none
 
@@ -45,13 +45,14 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 4, 'useful': 5} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Section 5 row 'Per-environment secret grants … Not re-checked in this step. The DS-02 record is not among this step's inputs' and open question CQ-DS-3: the agent read hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md (DS-02). That file already answers the question: for Local/CI, `feature/<story>`, `dev` and `main`, secrets required = None, granted = None, and no access request was raised (section 2, from tool:repo-access). The workbook action explicitly includes 'Access for the secrets in all the environments', so the output should cite that record and close CQ-DS-3 rather than defer it.
-- The 'journey:task.db_changes' citations (section 1 closing note; section 5 Database row) do not use the convention the brief gives for other GitHub files read (file:<repository>/<path>). Cite them as file:hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.db_changes.md. The content they support is accurate.
-- 'The coding step (DS-05) writes the final code' (section 3): no input names DS-05 as the coding step. task.repo_access RAQ-2 only refers to 'the first CI run in DS-05/DS-06'. Cite RAQ-2 or soften the wording.
-- Optionally give a rough line-count estimate per component, e.g. about 12 lines for risk.py, 2 lines in explain.py and 3 lines in __init__.py. The sketches already make this visible, and a figure would speak more directly to the workbook outcome's 'minimum lines of code'.
+- Header row 'Background read' gives commit hashes e779ba1 (task.secrets_scope) and 27457ab (task.db_changes) and attributes them to 'mcp:hobasa-context (context_list revisions)'. Neither hash appears in any input, brief or readable record (JOURNEY.md, COMMUNICATION.md). Ask the agent to save the context_list receipt, or drop the hashes, so the gate can check them.
+- The output cites 'journey:task.secrets_scope' and 'journey:task.db_changes', but the brief does not list 'journey:' as a citation form. These files were read as 'Other GitHub files', so they should be cited as file:hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md and file:hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.db_changes.md.
+- Section 1 cites journey:task.db_changes section 2 for 'no network, pipeline or storage layer'. That section covers only the absence of a database and migrations. The 'no network' part rests on tool:repo (explain.py builds the request dict but does not send it), so tool:repo should carry that claim.
+- CQ-DS-1 resolves the test-file conflict in favour of feat.tasks because it is 'the later task breakdown'. feat.design B2.5 and feat.tasks section 2 (TA-4) both allow either file, so the agent could say the conflict is only between TK-03.2's agent judgement and TA-4, not with the approved design.
+- Section 6 says TSK-03 and TSK-04 'touch different files apart from the shared version step'. Under feat.tasks 'Files in budget', TSK-04 does not touch __init__.py at all, so the two tasks share no file. The wording could be tightened to say so.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
