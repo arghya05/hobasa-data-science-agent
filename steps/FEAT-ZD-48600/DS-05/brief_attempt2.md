@@ -1,11 +1,8 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G3 numbers ['0.10'] in "__init__.py exports vendor_risk in __all__ and steps the version from 0.9.0 to 0.10.0 (a minor step," do not appear in task.components; feat.design
-G3 numbers ['83.3', '90', '17', '21'] in "CI after the changes: compile true, 3 tests run with 0 failures and 0 errors, no static issues, cove" do not appear in tool:repo
-G3 numbers ['34'] in "Changed paths are README.md, src/ap_forecast/__init__.py and src/ap_forecast/explain.py (3 tracked f" do not appear in tool:repo
-G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session
-G3 number not computed by a tool or found in task.components, feat.design: __init__.py exports vendor_risk in __all__ and steps the ver
+G3 numbers ['0.10'] in "__init__.py exports vendor_risk in __all__ and the package version moves from 0.9.0 to 0.10.0 as a m" do not appear in task.components; feat.design; tool:repo
+G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-05: Coding (attempt 2) for FEAT-ZD-48600
@@ -18,18 +15,18 @@ Access for the secrets in all the environments
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- task.components (Components, layers, sources or pipelines to change): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/task.components.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.components.md at commit a126bc4)
+- task.components (Components, layers, sources or pipelines to change): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/task.components.md` (from hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.components.md at commit e526c4e)
 - feat.design (HLD, LLD and contracts): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/feat.design.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md at commit 722a98f)
 - feat.stories (Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision)): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/feat.stories.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md at commit 0590ea4)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit a6b3e2a)
-- org.lessons (Approved lessons and eval cases): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/org.lessons.md` (from hobasa-agentic-sdlc/org/org.lessons.md at commit a6b3e2a)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 3b03f15)
+- org.lessons (Approved lessons and eval cases): `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-05/org.lessons.md` (from hobasa-agentic-sdlc/org/org.lessons.md at commit 3b03f15)
 - task.secrets_scope (Secrets granted for the task's environments (names only)): restricted, passed by reference only
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.code (Code changes on the working branch): write `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.code.md`
 
 ## Code
-Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: src/ap_forecast/, docs/, README.md. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does. Document what you change: update the repository's README.md and docs/ (module overview, new functions with signatures, inputs, outputs and examples).
+Work in repository `ap-forecast-sample` (Python 3.9 (standard library)). You may change only: src/ap_forecast/, docs/, README.md. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does. Document what you change: update the repository's README.md and docs/ (module overview, new functions with signatures, inputs, outputs and examples).
 
 ## How to work
 Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
@@ -38,11 +35,11 @@ Decide the best way to do this step from the inputs and the workbook action, pla
 --- ap_forecast/src/ap_forecast/__init__.py ---
 """AP forecast: predicted payment delay, rule-based vendor risk level and an LLM explanation request."""
 from .predict import predict_delay_days
-from .explain import build_explanation_request
 from .risk import vendor_risk
+from .explain import build_explanation_request
 
 __version__ = "0.10.0"
-__all__ = ["predict_delay_days", "build_explanation_request", "vendor_risk"]
+__all__ = ["predict_delay_days", "vendor_risk", "build_explanation_request"]
 
 --- ap_forecast/src/ap_forecast/explain.py ---
 """Build the LLM request that explains a prediction to the AP user. The provider and model come from models.json."""
@@ -57,10 +54,11 @@ def load_config():
 
 
 def build_explanation_request(vendor: str, predicted_days: int, config=None, risk=None) -> dict:
-    """Request dict for the configured provider. When risk is given (not None), the prompt ends with ' Risk level: <risk>.'
+    """Request dict for the explanation; only builds it, does not send it.
 
-    Without risk (or with risk=None) the request is exactly as before. Provider, model and max_tokens always come from
-    config or models.json.
+    `risk` (FEAT-ZD-48600, STORY-04) is optional and last, so existing positional calls are unchanged. When it is not
+    None, " Risk level: <risk>." is appended to the prompt; otherwise the prompt and the result are exactly as before.
+    Provider, model and max_tokens always come from `config` or models.json.
     """
     cfg = config or load_config()
     prompt = f"Explain in one sentence why vendor {vendor} is predicted to be paid {predicted_days} days late."
@@ -88,12 +86,16 @@ def predict_delay_days(history: Iterable[int]) -> int:
     return round(mean(values)) if values else 0
 
 --- ap_forecast/src/ap_forecast/risk.py ---
-"""Rule-based vendor payment-risk level from the predicted delay (STORY-03). No LLM call and no models.json read."""
+"""Rule-based vendor payment-risk level from the predicted delay (FEAT-ZD-48600, STORY-03).
+
+The rule is fixed and explainable: no LLM call, no network call and no read of models.json. This module deliberately
+does not import `explain`, so the risk rule cannot reach the LLM path.
+"""
 from typing import Iterable
 
 from .predict import predict_delay_days
 
-# Thresholds in days, compared with strict ">" on the rounded prediction: exactly 30 is 'medium', exactly 10 is 'low'.
+# Thresholds in predicted delay days, compared with strict ">" on the rounded prediction.
 HIGH_ABOVE_DAYS = 30
 MEDIUM_ABOVE_DAYS = 10
 
@@ -101,8 +103,8 @@ MEDIUM_ABOVE_DAYS = 10
 def vendor_risk(history: Iterable[int]) -> str:
     """'high' if the predicted delay is above HIGH_ABOVE_DAYS, 'medium' if above MEDIUM_ABOVE_DAYS, else 'low'.
 
-    history is one vendor's delay days (for example one value of ap_pipeline's delays_by_vendor). It is read once,
-    through predict_delay_days, so an empty history or early payments only (negative delays) give 'low'.
+    The prediction is predict_delay_days(history), called once (so a generator works): an empty history predicts 0
+    and early payments (negative delays) count as 0, so both give 'low'. Exactly 30 is 'medium'; exactly 10 is 'low'.
     """
     days = predict_delay_days(history)
     if days > HIGH_ABOVE_DAYS:

@@ -1,18 +1,26 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "CQ-DS5-1 | The CI run in this step did not pass the coverage gate (`COVERAGE_MIN = 90.0`); compile, the existing tests and static checks did pass. (section 7, open questions table)",
+      "why": "This is a CI result (gate failed on coverage; compile, existing tests and static checks passed) and no tool view or cited file records any CI output. file:ap_forecast/ci.py only defines the checks and COVERAGE_MIN = 90.0; tool:repo shows source code, not a run. The only tool-result text in the output is \"Sources compile\", which supports compile and nothing else. This is the same claim the previous refusal rejected (\"Overall passed | false (coverage only) | CI run\"), now stated as fact in the open-questions table. Putting it in a question row does not make it an assumption: the sentence states the outcome as fact, not as something to verify."
+    },
+    {
+      "text": "CI was run in this step. Its JSON result is not held in any view this output can cite (section 3)",
+      "why": "No tool view or cited source shows that `/usr/bin/python3 ci.py` was run in this step. The output itself says no citable view holds the result. The claim is made only to support the CQ-DS5-1 result statement above."
+    }
+  ],
   "improvements": [
-    "CI does not pass. The coverage gate fails: 83.3 against the 90% minimum in file:ap_forecast/ci.py (COVERAGE_MIN = 90.0). The brief says to run CI 'until it passes', and the workbook outcome is an updated repo. The write scope excludes tests/, so this step cannot meet the gate. That conflict is filed as CQ-C1, a non-blocking question. It should be raised to the spine or owner as a blocking or escalated item, with a request to widen the scope to tests/ or move the gate to DS-06. Otherwise DS-05 is handed off with a red CI.",
-    "The output file ends with a stray line, '[Tool result] [ap_forecast] Sources compile' (line 182). It belongs to neither section 8 nor any other section and should be removed.",
-    "Sections 4 and 8 cite 'CI run, section 4' as a source. Cite file:ap_forecast/ci.py (gate, static checks) together with the CI output the step recorded, so the coverage, gate and static-check claims trace to a readable source.",
-    "Section 4 says the CI was 're-run in this attempt; code unchanged since the first attempt', but nothing in the output proves it. Add the run's timestamp or receipt, or drop the qualifier.",
-    "In docs/ap_forecast.md, the risk_by_vendor example uses `delays`, which the snippet never defines. Add a one-line comment saying where it comes from (ap_pipeline.delays.delays_by_vendor(records)).",
-    "Secrets per environment still rest on CQ-DS-3. DS-02's approved task.secrets_scope (journey:task.secrets_scope) could be cited for the per-environment grants, instead of carrying the question forward."
+    "Rephrase CQ-DS5-1 as something to verify, without reporting a CI outcome. For example: \"Code reading (tool:repo) shows the existing tests do not run the `vendor_risk` body or the `risk` append, so coverage is expected to be below COVERAGE_MIN = 90.0 until the CMP-4/CMP-5 tests exist; the spine's CI record is authoritative.\" Section 3 already supports this inference, so stating it as an expectation is grounded.",
+    "Remove the stray trailing lines \"[Tool result] [ap_forecast] Sources compile\" (they appear twice at the end of task.code.md). They are tool-output artifacts, not part of the document.",
+    "Section 4 cites \"data-science-steps skill, DS-06\", which is not one of the step's citable sources (inputs, tool:repo, file:, record:). Cite record:brief or the workbook instead. In substance the skill does support DS-06 writing unit tests to at least 90% coverage.",
+    "The CQ-DS5-1 interim answer \"DS-07 commits only after CI passes\" goes further than the DS-07 skill text, which says commit and push after unit-testing completion and does not mention a CI-pass condition. Mark it as an assumption.",
+    "The secrets row could state plainly that task.secrets_scope was not readable (restricted, by reference only), and that 'none needed' rests on task.components section 5 and the code, not on reading the scope."
   ],
   "scores": {
-    "correct": 5,
-    "complete": 3,
-    "grounded": 5,
+    "correct": 3,
+    "complete": 4,
+    "grounded": 3,
     "useful": 4
   },
-  "notes": "I checked every statement against the tool view, task.components, feat.design, feat.stories, org.engineering_stack, org.lessons, ap_forecast/ci.py, README.md and docs/ap_forecast.md. The shell was blocked by G9, so I could not re-run CI or git status myself. The quoted code matches the tool view exactly. The version change from 0.9.0 to 0.10.0 matches task.components and the tool view. The AC mapping matches feat.stories (AC-03.1 to AC-03.8, AC-04.1 to AC-04.5). The secrets and environment statements match task.components section 5. The CI JSON is consistent with the code: risk.py has 9 statements, lines 17-20 are missed (the vendor_risk body), explain.py line 21 is the `prompt +=` append, the total is 30/5 = 83.3%, and 3 tests ran, matching test_forecast.py. The previous refusal point (the tool-permission statement) is gone. No hallucinations found. The main weakness is completeness: CI is red on coverage because the tests are outside the write scope. The output says so openly, but it treats this as a non-blocking question."
+  "notes": "The code changes match the tool view exactly: risk.py, explain.py and __init__.py all follow task.components CMP-1 to CMP-3 and feat.design B2.2/DD-9/DD-11. Version 0.9.0 \u2192 0.10.0, `risk` is the last parameter, strict `>` thresholds are 30/10, and risk.py does not import explain. README.md and docs/ap_forecast.md exist in the repo and are accurate; the README example (25, 40, 35) gives a mean of 33.3, which rounds to 33, so 'high' is correct. The descriptions of ci.py, the database and secrets rows, and the L-007/L-011 handling are all grounded. The remaining blocker is the same kind of issue as last time: the output again asserts a CI outcome (coverage gate failed; compile, tests and static checks passed) and an unrecorded CI run, now inside the CQ-DS5-1 open-question row instead of a table cell. The figure 83.3% was removed, but the statement that the run failed on coverage alone is still unsupported by any tool view."
 }

@@ -1,59 +1,74 @@
 {
   "structured": {
-    "approach": "I fixed the single refusal point: a claim cited a file that the checker had no receipt for. I removed the file:ap_forecast/CLAUDE.md citation from the claims and from task.code.md. Both rules it supported are already in this step's inputs. The signature rule \"Keep every existing signature; add new functions.\" is in feat.design (Architecture rule, NF-4) and task.components (\"Left unchanged\"). The version location in src/ap_forecast/__init__.py is in task.components (CMP-2) and the tool view. The code and docs are unchanged; they already match feat.design B2.1/B2.2 and the tool view. I re-ran /usr/bin/python3 ci.py and git status to confirm the state, then rewrote task.code.md in full. Figures that come only from the CI run appear only in its verbatim output, and the claims do not carry them. The coverage gap stays a non-blocking question: the new tests go under tests/, outside this step's write scope (src/ap_forecast/, docs/, README.md).",
+    "approach": "I read the DS-05 inputs (task.components at f956a35, feat.design, feat.stories, org.engineering_stack, org.lessons) and the repository's ci.py and CLAUDE.md with the Read tool. I implemented the minimum design from task.components: CMP-1, a new risk.py with vendor_risk; CMP-2, the __init__ export and a minor version step; CMP-3, an additive risk=None last parameter in explain.py. Each has docstrings stating its rules, boundaries and the no-LLM constraint. I documented the changes in docs/ap_forecast.md and README.md. I ran /usr/bin/python3 ci.py and git status. Compile, the existing tests and static checks pass. The coverage gate fails because the new lines are exercised only by the CMP-4 and CMP-5 tests in tests/, which this step may not write; DS-06 writes them. I did not inflate coverage with workarounds and recorded the gap as a non-blocking open question. I rewrote task.code.md in full. I did not commit or push.",
     "tools_used": [
+      "Skill (data-science-steps)",
+      "Read",
       "Grep",
       "Write",
-      "Bash (/usr/bin/python3 ci.py, git status)"
+      "Bash (/usr/bin/python3 ci.py, git status, git diff)"
     ],
     "claims": [
       {
-        "text": "src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history: Iterable[int]) -> str, which calls predict_delay_days once and compares with strict '>' ('high' above 30, 'medium' above 10, else 'low'); it imports predict_delay_days and not explain.",
+        "text": "New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history), which returns 'high' above 30, 'medium' above 10, else 'low' using strict > on predict_delay_days, and imports only .predict (not explain).",
         "source": "tool:repo; task.components; feat.design"
       },
       {
-        "text": "build_explanation_request(vendor, predicted_days, config=None, risk=None) appends ' Risk level: {risk}.' to the prompt only when risk is not None; provider, model and max_tokens still come from config or load_config().",
+        "text": "build_explanation_request takes risk=None as its last parameter and appends ' Risk level: <risk>.' to the prompt only when risk is not None; load_config and the returned keys are unchanged.",
         "source": "tool:repo; task.components; feat.stories"
       },
       {
-        "text": "__init__.py imports vendor_risk, lists it in __all__ and sets __version__ to \"0.10.0\", one minor step from the previous \"0.9.0\".",
-        "source": "tool:repo; task.components; feat.design"
+        "text": "__init__.py adds vendor_risk to __all__ and takes the minor version step from 0.9.0 that CMP-2 requires.",
+        "source": "task.components; feat.design"
       },
       {
-        "text": "predict.py and models.json are unchanged; models.json holds only provider acme-llm, model acme-text-2 and max_tokens 300.",
-        "source": "tool:repo; task.components"
+        "text": "The package version string in src/ap_forecast/__init__.py is now \"0.10.0\".",
+        "source": "tool:repo"
       },
       {
-        "text": "The architecture rule \"Keep every existing signature; add new functions.\" is respected: the only signature change is the trailing default parameter risk=None.",
-        "source": "feat.design; task.components; tool:repo"
+        "text": "predict.py, models.json, ci.py and tests/ were left unchanged, as task.components requires.",
+        "source": "task.components; tool:repo"
       },
       {
-        "text": "The tests that cover the new lines are planned in task.components: CMP-4 creates tests/test_risk.py and CMP-5 adds test_request_with_risk and test_request_without_risk_unchanged to tests/test_forecast.py. This step may write only src/ap_forecast/, docs/ and README.md, so those tests are left to DS-06, and coverage stays below the 90% bar until then.",
+        "text": "ci.py enforces COVERAGE_MIN = 90.0 and static checks (no print/eval/exec, no bare except, lines of at most 140 characters) over src/ap_forecast/*.py.",
+        "source": "file:ap_forecast/ci.py"
+      },
+      {
+        "text": "The CI run passes compile, the existing tests and the static checks, but fails the coverage gate (COVERAGE_MIN = 90.0) because no existing test calls the new vendor_risk body or the risk append in build_explanation_request.",
+        "source": "file:ap_forecast/ci.py; tool:repo"
+      },
+      {
+        "text": "The tests that cover the new lines (CMP-4 tests/test_risk.py and CMP-5 in tests/test_forecast.py) are in tests/, outside the paths this step may change (src/ap_forecast/, docs/, README.md).",
         "source": "task.components; record:brief"
       },
       {
-        "text": "The boundary behaviour required by L-007 is implemented: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low'.",
-        "source": "org.lessons; feat.stories; tool:repo"
+        "text": "No secret, database or new dependency is needed; models.json holds only provider, model and max_tokens.",
+        "source": "task.components; org.engineering_stack; tool:repo"
       },
       {
-        "text": "The change adds no secret, network call, database or Databricks change.",
-        "source": "task.components; org.engineering_stack; tool:repo"
+        "text": "Existing public signatures are kept and new behaviour is added, as the repository rule requires.",
+        "source": "file:ap_forecast/CLAUDE.md; feat.design"
+      },
+      {
+        "text": "L-007 is reflected: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low', as documented in docs/ap_forecast.md.",
+        "source": "org.lessons; feat.stories; tool:repo"
       }
     ],
     "open_questions": [
-      "CQ-C1: CI fails only the 90% coverage gate after DS-05, because the new tests belong under tests/, which this step may not write. Should DS-05 accept a coverage-only CI failure that DS-06 closes with the CMP-4 and CMP-5 tests, or should DS-05's write scope include tests/?",
-      "CQ-C2: Confirm 0.10.0 as the package version (CQ-DS-2).",
-      "Carried: CQ-DS-1 (test file split), CQ-DS-3 (per-environment secrets record), RAQ-1 (branching), TQ-8 and PQ-5 (STORY-04 release), PQ-1, TQ-5, TQ-4."
+      "CQ-DS5-1: CI fails the coverage gate (COVERAGE_MIN = 90.0) until the CMP-4 and CMP-5 tests exist. DS-05 may not write tests/, so the gate can pass only after DS-06. Confirm DS-06 adds those tests before DS-07 commits, or allow DS-05 to write tests/.",
+      "CQ-DS-2: the next version after 0.9.0 is set as a minor step in __init__.py; Developer to confirm the value.",
+      "CQ-DS-1 (carried): risk tests go in a new tests/test_risk.py (TKQ-2); Developer to confirm.",
+      "Carried: TQ-8 and PQ-5 gate the release of STORY-04 (sending the risk label to the provider); TQ-4, PQ-1 and TQ-5 are implemented as their interim answers."
     ],
-    "summary": "I rewrote task.code.md in full without the uncited file:ap_forecast/CLAUDE.md citation. The signature and version rules it supported now cite feat.design and task.components. The code is unchanged, and CI still fails the coverage gate. It compiles, the existing tests pass and the static checks find no issues. The only failure is coverage below the 90% gate, because the new vendor_risk body and the risk append are not yet tested. Their tests go under tests/, outside this step's write scope, so DS-06 adds them (CQ-C1). The change adds risk.py with vendor_risk and its two thresholds (30 and 10), gives build_explanation_request an optional last parameter risk=None, exports vendor_risk and moves the version from 0.9.0 to 0.10.0. README.md and docs/ap_forecast.md document the functions. Nothing is committed."
+    "summary": "I implemented STORY-03 and STORY-04 in ap_forecast: a new rule-based vendor_risk (risk.py, no LLM path), an additive risk=None parameter on build_explanation_request, the vendor_risk export and a minor version step. README.md and a new docs/ap_forecast.md document them. Compile, the existing tests and static checks pass. The coverage gate fails until DS-06 adds the CMP-4 and CMP-5 tests in tests/, which this step may not edit. Nothing is committed. task.code.md is rewritten in full."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
-    "num_turns": 5,
-    "session_id": "e9baba12-81f8-4be2-a5b0-b7e7feb74bc7",
-    "total_cost_usd": 1.9574230000000001,
+    "num_turns": 6,
+    "session_id": "253ff9c7-79dc-4f8e-b244-d266b28f9cd5",
+    "total_cost_usd": 1.7514142,
     "permission_denials": [],
-    "result": "{\"approach\":\"I fixed the single refusal point: a claim cited a file that the checker had no receipt for. I removed the file:ap_forecast/CLAUDE.md citation from the claims and from task.code.md. Both rules it supported are already in this step's inputs. The signature rule \\\"Keep every existing signature; add new functions.\\\" is in feat.design (Architecture rule, NF-4) and task.components (\\\"Left unchanged\\\"). The version location in src/ap_forecast/__init__.py is in task.components (CMP-2) and the tool view. The code and docs are unchanged; they already match feat.design B2.1/B2.2 and the tool view. I re-ran /usr/bin/python3 ci.py and git status to confirm the state, then rewrote task.code.md in full. Figures that come only from the CI run appear only in its verbatim output, and the claims do not carry them. The coverage gap stays a non-blocking question: the new tests go under tests/, outside this step's write scope (src/ap_forecast/, docs/, README.md).\",\"tools_used\":[\"Grep\",\"Write\",\"Bash (/usr/bin/python3 ci.py, git status)\"],\"claims\":[{\"text\":\"src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history: Iterable[int]) -> str, which calls predict_delay_days once and compares with strict '>' ('high' above 30, 'medium' above 10, else 'low'); it imports predict_delay_days and not explain.\",\"source\":\"tool:repo; task.components; feat.design\"},{\"text\":\"build_explanation_request(vendor, predicted_days, config=None, risk=None) appends ' Risk level: {risk}.' to the prompt only when risk is not None; provider, model and max_tokens still come from config or load_config().\",\"source\":\"tool:repo; task.components; feat.stories\"},{\"text\":\"__init__.py imports vendor_risk, lists it in __all__ and sets __version__ to \\\"0.10.0\\\", one minor step from the previous \\\"0.9.0\\\".\",\"source\":\"tool:repo; task.components; feat.design\"},{\"text\":\"predict.py and models.json are unchanged; models.json holds only provider acme-llm, model acme-text-2 and max_tokens 300.\",\"source\":\"tool:repo; task.components\"},{\"text\":\"The architecture rule \\\"Keep every existing signature; add new functions.\\\" is respected: the only signature change is the trailing default parameter risk=None.\",\"source\":\"feat.design; task.components; tool:repo\"},{\"text\":\"The tests that cover the new lines are planned in task.components: CMP-4 creates tests/test_risk.py and CMP-5 adds test_request_with_risk and test_request_without_risk_unchanged to tests/test_forecast.py. This step may write only src/ap_forecast/, docs/ and README.md, so those tests are left to DS-06, and coverage stays below the 90% bar until then.\",\"source\":\"task.components; record:brief\"},{\"text\":\"The boundary behaviour required by L-007 is implemented: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low'.\",\"source\":\"org.lessons; feat.stories; tool:repo\"},{\"text\":\"The change adds no secret, network call, database or Databricks change.\",\"source\":\"task.components; org.engineering_stack; tool:repo\"}],\"open_questions\":[\"CQ-C1: CI fails only the 90% coverage gate after DS-05, because the new tests belong under tests/, which this step may not write. Should DS-05 accept a coverage-only CI failure that DS-06 closes with the CMP-4 and CMP-5 tests, or should DS-05's write scope include tests/?\",\"CQ-C2: Confirm 0.10.0 as the package version (CQ-DS-2).\",\"Carried: CQ-DS-1 (test file split), CQ-DS-3 (per-environment secrets record), RAQ-1 (branching), TQ-8 and PQ-5 (STORY-04 release), PQ-1, TQ-5, TQ-4.\"],\"summary\":\"I rewrote task.code.md in full without the uncited file:ap_forecast/CLAUDE.md citation. The signature and version rules it supported now cite feat.design and task.components. The code is unchanged, and CI still fails the coverage gate. It compiles, the existing tests pass and the static checks find no issues. The only failure is coverage below the 90% gate, because the new vendor_risk body and the risk append are not yet tested. Their tests go under tests/, outside this step's write scope, so DS-06 adds them (CQ-C1). The change adds risk.py with vendor_risk and its two thresholds (30 and 10), gives build_explanation_request an optional last parameter risk=None, exports vendor_risk and moves the version from 0.9.0 to 0.10.0. README.md and docs/ap_forecast.md document the functions. Nothing is committed.\"}"
+    "result": "{\"approach\":\"I read the DS-05 inputs (task.components at f956a35, feat.design, feat.stories, org.engineering_stack, org.lessons) and the repository's ci.py and CLAUDE.md with the Read tool. I implemented the minimum design from task.components: CMP-1, a new risk.py with vendor_risk; CMP-2, the __init__ export and a minor version step; CMP-3, an additive risk=None last parameter in explain.py. Each has docstrings stating its rules, boundaries and the no-LLM constraint. I documented the changes in docs/ap_forecast.md and README.md. I ran /usr/bin/python3 ci.py and git status. Compile, the existing tests and static checks pass. The coverage gate fails because the new lines are exercised only by the CMP-4 and CMP-5 tests in tests/, which this step may not write; DS-06 writes them. I did not inflate coverage with workarounds and recorded the gap as a non-blocking open question. I rewrote task.code.md in full. I did not commit or push.\",\"tools_used\":[\"Skill (data-science-steps)\",\"Read\",\"Grep\",\"Write\",\"Bash (/usr/bin/python3 ci.py, git status, git diff)\"],\"claims\":[{\"text\":\"New module src/ap_forecast/risk.py defines HIGH_ABOVE_DAYS = 30, MEDIUM_ABOVE_DAYS = 10 and vendor_risk(history), which returns 'high' above 30, 'medium' above 10, else 'low' using strict > on predict_delay_days, and imports only .predict (not explain).\",\"source\":\"tool:repo; task.components; feat.design\"},{\"text\":\"build_explanation_request takes risk=None as its last parameter and appends ' Risk level: <risk>.' to the prompt only when risk is not None; load_config and the returned keys are unchanged.\",\"source\":\"tool:repo; task.components; feat.stories\"},{\"text\":\"__init__.py adds vendor_risk to __all__ and takes the minor version step from 0.9.0 that CMP-2 requires.\",\"source\":\"task.components; feat.design\"},{\"text\":\"The package version string in src/ap_forecast/__init__.py is now \\\"0.10.0\\\".\",\"source\":\"tool:repo\"},{\"text\":\"predict.py, models.json, ci.py and tests/ were left unchanged, as task.components requires.\",\"source\":\"task.components; tool:repo\"},{\"text\":\"ci.py enforces COVERAGE_MIN = 90.0 and static checks (no print/eval/exec, no bare except, lines of at most 140 characters) over src/ap_forecast/*.py.\",\"source\":\"file:ap_forecast/ci.py\"},{\"text\":\"The CI run passes compile, the existing tests and the static checks, but fails the coverage gate (COVERAGE_MIN = 90.0) because no existing test calls the new vendor_risk body or the risk append in build_explanation_request.\",\"source\":\"file:ap_forecast/ci.py; tool:repo\"},{\"text\":\"The tests that cover the new lines (CMP-4 tests/test_risk.py and CMP-5 in tests/test_forecast.py) are in tests/, outside the paths this step may change (src/ap_forecast/, docs/, README.md).\",\"source\":\"task.components; record:brief\"},{\"text\":\"No secret, database or new dependency is needed; models.json holds only provider, model and max_tokens.\",\"source\":\"task.components; org.engineering_stack; tool:repo\"},{\"text\":\"Existing public signatures are kept and new behaviour is added, as the repository rule requires.\",\"source\":\"file:ap_forecast/CLAUDE.md; feat.design\"},{\"text\":\"L-007 is reflected: a prediction of exactly 30 gives 'medium' and exactly 10 gives 'low', as documented in docs/ap_forecast.md.\",\"source\":\"org.lessons; feat.stories; tool:repo\"}],\"open_questions\":[\"CQ-DS5-1: CI fails the coverage gate (COVERAGE_MIN = 90.0) until the CMP-4 and CMP-5 tests exist. DS-05 may not write tests/, so the gate can pass only after DS-06. Confirm DS-06 adds those tests before DS-07 commits, or allow DS-05 to write tests/.\",\"CQ-DS-2: the next version after 0.9.0 is set as a minor step in __init__.py; Developer to confirm the value.\",\"CQ-DS-1 (carried): risk tests go in a new tests/test_risk.py (TKQ-2); Developer to confirm.\",\"Carried: TQ-8 and PQ-5 gate the release of STORY-04 (sending the risk label to the provider); TQ-4, PQ-1 and TQ-5 are implemented as their interim answers.\"],\"summary\":\"I implemented STORY-03 and STORY-04 in ap_forecast: a new rule-based vendor_risk (risk.py, no LLM path), an additive risk=None parameter on build_explanation_request, the vendor_risk export and a minor version step. README.md and a new docs/ap_forecast.md document them. Compile, the existing tests and static checks pass. The coverage gate fails until DS-06 adds the CMP-4 and CMP-5 tests in tests/, which this step may not edit. Nothing is committed. task.code.md is rewritten in full.\"}"
   }
 }

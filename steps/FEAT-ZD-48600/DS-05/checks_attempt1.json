@@ -1,8 +1,6 @@
 {
   "failures": [
-    "G3 numbers ['0.10'] in \"__init__.py exports vendor_risk in __all__ and steps the version from 0.9.0 to 0.10.0 (a minor step,\" do not appear in task.components; feat.design",
-    "G3 numbers ['83.3', '90', '17', '21'] in \"CI after the changes: compile true, 3 tests run with 0 failures and 0 errors, no static issues, cove\" do not appear in tool:repo",
-    "G3 numbers ['34'] in \"Changed paths are README.md, src/ap_forecast/__init__.py and src/ap_forecast/explain.py (3 tracked f\" do not appear in tool:repo",
-    "G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session"
+    "G3 numbers ['0.10'] in \"__init__.py exports vendor_risk in __all__ and the package version moves from 0.9.0 to 0.10.0 as a m\" do not appear in task.components; feat.design; tool:repo",
+    "G2 claim cites file:ap_forecast/ci.py but the agent never read that file in this session"
   ]
 }

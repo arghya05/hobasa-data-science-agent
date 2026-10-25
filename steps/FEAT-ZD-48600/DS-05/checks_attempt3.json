@@ -1,5 +1,7 @@
 {
   "failures": [
-    "G1 judge found an unsupported statement: \"This step's tool permissions allow only the CI command and read-only git, and the new tests are DS-06 work.\" (No source states this step's tool permission set. record:brief tells the agent to run `/usr/bin/python3 ci.py` and not to commit or push, but it never mentions )"
+    "G1 judge found an unsupported statement: \"Coverage gate (`COVERAGE_MIN = 90.0`) | **FAIL.** The CI run measured 83.3% total. (section 3 table, cited \"CI run; file:ap_forecast/ci.py\")\" (83.3 does not appear in any source the agent can cite. file:ap_forecast/ci.py defines only COVERAGE_MIN = 90.0. tool:repo has no CI output, and the only tool re)",
+    "G1 judge found an unsupported statement: \"`__init__.py` and `predict.py` are fully covered. (section 3, Coverage row)\" (This is a per-file coverage result attributed to \"CI run\". No tool view or cited file contains a coverage report, so the per-file figures have no supporting sou)",
+    "G1 judge found an unsupported statement: \"Overall `passed` | `false` (coverage only) | CI run\" (This is a CI result cited only to \"CI run\". No tool view records the CI JSON output (passed, failures, errors, coverage), so it differs from what the tool views)"
   ]
 }

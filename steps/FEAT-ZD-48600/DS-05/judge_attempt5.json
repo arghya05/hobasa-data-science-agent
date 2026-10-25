@@ -1,0 +1,22 @@
+{
+  "unsupported": [
+    {
+      "text": "[Tool result] [ap_forecast] Sources compile (appears three times at the end of task.code.md, lines 99-103)",
+      "why": "This reports a tool/CI result, that the sources compile. No tool view in record:brief and no cited file records a compile or CI run. The output's own section 3 says the authoritative CI result is the spine's record, which the output does not hold. The prior refusal flagged this same kind of CI-result claim. These lines are also not part of the document's structure, so they are probably stray tool output pasted into the file."
+    }
+  ],
+  "improvements": [
+    "Remove the three stray '[Tool result] [ap_forecast] Sources compile' lines at the end of the file. They are not part of the document, and no view supports them.",
+    "The result paragraph says 'CI status in CQ-DS5-1', but CQ-DS5-1 now only asks a question about the coverage gate and gives no CI status. Fix the pointer or the wording.",
+    "Section 4 cites 'data-science-steps skill, DS-06'. That file is not in the brief's list of sources. Cite it as file:hobasa-data-science-agent/.claude/skills/data-science-steps/SKILL.md, or cite record:brief/workbook. Also, the CQ-DS5-1 interim answer 'DS-07 commits only after CI passes' goes beyond the skill, whose DS-07 trigger is 'Unit Testing Completion'. Mark it as a proposal.",
+    "The brief says to run `/usr/bin/python3 ci.py` until it passes. The output does not record a CI result that can be cited, so the gate result stays unconfirmed. If a CI JSON view is available, cite it. Otherwise state plainly that the result is unknown and that the gate is expected to fail on coverage until DS-06.",
+    "The secrets row could name the environments' secret scope from task.secrets_scope by reference ID if one exists. As written, the 'Access for the secrets in all the environments' part of the action rests only on task.components section 5."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked the code claims against the tool view and the files on disk, and they hold. risk.py has HIGH_ABOVE_DAYS=30, MEDIUM_ABOVE_DAYS=10, uses strict '>', calls predict_delay_days once and does not import explain. In explain.py, risk=None is the last parameter, with the append guarded by `is not None`. __init__.py exports vendor_risk and sets version 0.10.0, up from 0.9.0 per task.components and feat.design. docs/ap_forecast.md exists and has an overview, signatures, inputs, outputs, edge cases, examples, a TQ-8 note and a changelog. README.md has the function table, a usage example and the docs link. The ci.py details (COVERAGE_MIN = 90.0, the static rules, the 140-character limit, coverage imported at module level) match file:ap_forecast/ci.py. It is true that the existing tests do not run the vendor_risk body or the risk append. Base commit d67e866, branch feature/story, the input commit hashes, and the AC and CMP mappings all match the inputs. The two previously refused CI-result statements are gone. The one remaining hallucination is the three appended 'Sources compile' tool-result lines. They state a tool result that no view supports."
+}

@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"[Tool result] [ap_forecast] Sources compile (appears three times at the end of task.code.md, lines 99-103)\" (This reports a tool/CI result, that the sources compile. No tool view in record:brief and no cited file records a compile or CI run. The output's own section 3 )"
+  ]
+}

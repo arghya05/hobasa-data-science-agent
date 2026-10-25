@@ -1,23 +1,30 @@
 {
   "unsupported": [
     {
-      "text": "This step's tool permissions allow only the CI command and read-only git, and the new tests are DS-06 work.",
-      "why": "No source states this step's tool permission set. record:brief tells the agent to run `/usr/bin/python3 ci.py` and not to commit or push, but it never mentions 'read-only git' or says that only these commands are allowed. The G9 hook in this evaluation session reports that 'step DS-05 may run only no shell commands', which does not match the stated permission set either. The sentence is used to explain why the new ACs were not executed, so it should be removed or cited."
+      "text": "Coverage gate (`COVERAGE_MIN = 90.0`) | **FAIL.** The CI run measured 83.3% total. (section 3 table, cited \"CI run; file:ap_forecast/ci.py\")",
+      "why": "83.3 does not appear in any source the agent can cite. file:ap_forecast/ci.py defines only COVERAGE_MIN = 90.0. tool:repo has no CI output, and the only tool result attached to the output says \"Sources compile\". \"CI run\" is not an allowed citation type (input item, tool:repo, api:, mcp:, file:, record:). The previous attempt was refused on G3 for this same uncited number, and it is still here."
+    },
+    {
+      "text": "`__init__.py` and `predict.py` are fully covered. (section 3, Coverage row)",
+      "why": "This is a per-file coverage result attributed to \"CI run\". No tool view or cited file contains a coverage report, so the per-file figures have no supporting source."
+    },
+    {
+      "text": "Overall `passed` | `false` (coverage only) | CI run",
+      "why": "This is a CI result cited only to \"CI run\". No tool view records the CI JSON output (passed, failures, errors, coverage), so it differs from what the tool views show."
     }
   ],
   "improvements": [
-    "Remove the stray trailing line '[Tool result] [ap_forecast] Sources compile' at the end of task.code.md. It is not part of the document and has no context.",
-    "The CI JSON in section 4 (tests_run 3, coverage 83.3, risk.py 17-20 and explain.py 21 missed) is internally consistent with the code in the tool view and with ci.py. It still appears in no input or tool view, and this step's listed sources do not include ci.py. Attach the CI run as a recorded tool result, or cite file:ap_forecast/ci.py for the static-check list and the 90% gate, so the gate can verify it.",
-    "The 'git status' result in section 1 (README.md modified; docs/ and risk.py new) is not backed by any recorded source. The files exist and the branch is feature/story (.git/HEAD), but whether README.md existed before this step cannot be checked. Record the git output.",
-    "In docs/ap_forecast.md the changelog line '0.9.0: predict_delay_days, build_explanation_request' suggests both functions were introduced in 0.9.0. The inputs only say 0.9.0 is the current version. Reword it to something like 'state at 0.9.0'.",
-    "CI fails overall on the coverage gate. The output says so plainly and raises CQ-C1. The workbook outcome is 'Updated repo with the new implemented code changes', and DS-06's action requires at least 90% coverage, so the deferral is reasonable. The gate should still decide CQ-C1, because the brief says to run CI 'until it passes'.",
-    "Secrets: task.secrets_scope was not read (restricted, by reference only). The conclusion that no secret is needed in local/CI, feature/<story>, dev or main rests on task.components section 5 and CQ-DS-3. It is correctly carried as an open item, but the per-environment confirmation is still pending."
+    "Delete the CI figures that have no source (83.3%, per-file coverage, passed=false), or cite them to a real tool view of the CI JSON. If none exists, state the coverage result as a reasoned expectation and mark it to verify. For example: new lines in risk.py and explain.py are not exercised by the existing tests in tool:repo, so the 90.0 gate in ci.py is expected to fail until DS-06.",
+    "Replace \"CI run\" as a citation everywhere (sections 3 and 5) with an allowed source type. The Tests and Compile rows are partly backed by tool:repo (the three test names) and by the attached \"Sources compile\" tool result. Cite those instead.",
+    "Line 101 has a stray \"[Tool result] [ap_forecast] Sources compile\" trailing the document. Remove it, or fold it into the Compile row as a citation.",
+    "Section 1's git status statement has no citation. Cite it, or note that it is the agent's own observation from the allowed `git status` command.",
+    "Workbook outcome: the code is implemented and documented, but the repository CI gate does not pass in this step. CQ-DS5-1 correctly raises the step-scope conflict (tests/ is not writable). Keep it prominent so the gate reviewers decide the order."
   ],
   "scores": {
-    "correct": 5,
+    "correct": 4,
     "complete": 4,
-    "grounded": 4,
+    "grounded": 3,
     "useful": 4
   },
-  "notes": "I checked task.code.md against all five inputs, the brief's tool view and the files in the ap_forecast checkout: risk.py, explain.py, __init__.py, README.md, docs/ap_forecast.md, ci.py and .git/HEAD.\n\nWhat matches the sources:\n- The code quoted in section 2 matches the tool view exactly. It follows task.components CMP-1 to CMP-3 and feat.design B2.1, B2.2, DD-9 and DD-11: strict '>', 'risk is not None', risk as the last parameter, and version 0.9.0 to 0.10.0.\n- README.md and docs/ap_forecast.md exist and contain what the output says: signatures, inputs, outputs, examples and a changelog. The examples are numerically correct; for instance, the mean of [28,34,40] is 34, which gives 'high'.\n- The working branch is feature/story. No files outside src/ap_forecast/, docs/ and README.md were added.\n- The CI figures could not be re-run, because shell is blocked in this session (G9). They are consistent with the statement counts and line numbers of the current files and with ci.py's checks.\n- DS-06 'Unit Test Cases' and its \u226590% coverage requirement are confirmed by the agent's data-science-steps skill (workbook).\n- The refusal fix holds: the output no longer cites file:ap_forecast/CLAUDE.md. Its rules are re-cited to feat.design (architecture rule, NF-4) and task.components (CMP-2), which state them.\n\nThe only unsupported statement is the uncited description of this step's tool permissions."
+  "notes": "I checked the code claims against tool:repo, and they match. risk.py has HIGH_ABOVE_DAYS=30 and MEDIUM_ABOVE_DAYS=10, uses strict >, and does not import explain. explain.py has risk=None last, with the guarded append. __init__ exports vendor_risk and has __version__ 0.10.0, where task.components records 0.9.0. docs/ap_forecast.md and README.md exist with the content described. Design and story IDs (B2.2, DD-9, DD-11, DD-1, NF-4, NF-8, DC-3, SE-3, SE-4, AC-03.x, AC-04.x, TQ-4/8, PQ-1/5, TQ-5) all exist in the cited inputs. The DS-06 coverage responsibility is backed by the data-science-steps skill. The secrets, database and lesson rows are backed by task.components, org.engineering_stack and org.lessons. The blocking problem is the same one as the earlier refusal: the 83.3% coverage figure, plus the per-file coverage and passed=false results, are attributed to \\\"CI run\\\", which is not an allowed source, and no tool view contains them. The figure may well be accurate: a statement count of 30 total with 5 missed is consistent. Even so, it is ungrounded in what the output may cite."
 }

@@ -1,3 +1,6 @@
 {
-  "failures": []
+  "failures": [
+    "G1 judge found an unsupported statement: \"CQ-DS5-1 | The CI run in this step did not pass the coverage gate (`COVERAGE_MIN = 90.0`); compile, the existing tests and static checks did pass. (section 7, o\" (This is a CI result (gate failed on coverage; compile, existing tests and static checks passed) and no tool view or cited file records any CI output. file:ap_fo)",
+    "G1 judge found an unsupported statement: \"CI was run in this step. Its JSON result is not held in any view this output can cite (section 3)\" (No tool view or cited source shows that `/usr/bin/python3 ci.py` was run in this step. The output itself says no citable view holds the result. The claim is mad)"
+  ]
 }
