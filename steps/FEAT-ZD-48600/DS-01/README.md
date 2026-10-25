@@ -10,7 +10,7 @@
 | Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
 |---|---|---|---|---|
 | feat.tasks | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.engineering_stack | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | a6b3e2a | source |
+| org.engineering_stack | hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | 3b03f15 | source |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: Attempt 3. Both earlier refusals were G2: the cited ap_forecast files counted as unread, even though attempt 2 re-read every one of them with Read. context_list and context_get showed that only the two contract items (feat.tasks, org.engineering_stack) can be fetched with a receipt; repository files can't. So instead of re-reading the files a third time, I re-fetched both inputs through context_get and rewrote task.repo_access in full. It cites only feat.tasks, org.engineering_stack, tool:repo-access, record:brief and record:memory, with no file: citations. I dropped details that only the repository files supported: the remote URL, the missing upstream, the reflog entries, COVERAGE_MIN and the coverage import. The step outcome rests entirely on the tool view and the inputs, so nothing essential was lost. I also left out a '[Tool result]' line that something outside my writes keeps appending to this file; my rewrite doesn't contain it.
-- Tools used: mcp:hobasa-context (context_list, context_get), Read, Write, tool:repo-access
+- Approach: I followed the DS-01 procedure in the data-science-steps skill. From feat.tasks I took the Data Science lane's tasks (TSK-03 and TSK-04, both in ap_forecast). From org.engineering_stack I took the language, CI command, coverage bar and branch convention, and the statement that no repository uses Databricks or a database. The step's tool policy allows no shell commands. So availability, the branch's origin and write access come from the spine's tool:repo-access view. I checked them against files read in the checkout: .git/HEAD and each branch ref file (main, dev, feature/story), the repository's CLAUDE.md, __init__.py, predict.py, explain.py, tests/test_forecast.py and ci.py. Every file citation in the output names a file that was actually read.
+- Tools used: Skill:data-science-steps, Read, Glob, Grep, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,15 +39,15 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 9 | — | — |
-| 2 | resumed | 11 | — | — |
-| 3 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 1 | — | — |
+| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 5} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- The intro says 'Nothing in the repository was changed in this step', but the tool view says feature/story was 'created from dev at d67e866' (the reflog shows the Agent Spine created it). Say that the spine created the branch and the agent made no changes, so the two statements don't look contradictory.
-- The last line '[Tool result] [ap_forecast] Branch feature/story at d67e866; write access confirmed' is stray text after the open-questions table. Remove it, or turn it into a cited row in section 2.
-- The agent read the ap_forecast files (__init__.py, .git logs). After the previous refusal it dropped those citations. It could still note that __init__.py confirms `__version__ = "0.9.0"` and `__all__`, which backs up the version claim it takes from feat.tasks.
-- RAQ-1 rightly flags that one literal `feature/story` branch doesn't match the 'feature branches per story' convention. Name an owner and a deadline (before DS-02/coding starts) so TSK-03 and TSK-04 don't both start on a branch nobody has agreed to.
+- RAQ-1's interim answer names 'DS-05/DS-06' as the steps where CI first runs. No cited input names these step IDs. It sits in an open question, so it does not block, but it would be cleaner to say 'the first CI run in the coding step' or to cite the step list.
+- Section 4 item 2 says 'DS-01 may not run shell commands under its tool policy'. That is true: the spine hook G9 enforces it. But the output cites no source for it. Cite record:brief or the tool policy, or drop the clause.
+- The file ends with a stray line, '[Tool result] [ap_forecast] Branch feature/story at d67e866; write access confirmed'. It matches tool:repo-access, but it reads as pasted tool output rather than part of the document. Remove it or fold it into section 2.
+- The 'Repository creation needed: No' row says the repository already exists. That is inferred from tool:repo-access ('available locally'), which is fine, but it could say outright that the existing remote is what the feature branch will push to.
+- TSK-03 says risk.py is new, and the output takes this from feat.tasks. It could also confirm from the checkout that src/ap_forecast/risk.py does not exist yet.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.

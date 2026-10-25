@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "RAQ-1's interim answer names 'DS-05/DS-06' as the steps where CI first runs. No cited input names these step IDs. It sits in an open question, so it does not block, but it would be cleaner to say 'the first CI run in the coding step' or to cite the step list.",
+    "Section 4 item 2 says 'DS-01 may not run shell commands under its tool policy'. That is true: the spine hook G9 enforces it. But the output cites no source for it. Cite record:brief or the tool policy, or drop the clause.",
+    "The file ends with a stray line, '[Tool result] [ap_forecast] Branch feature/story at d67e866; write access confirmed'. It matches tool:repo-access, but it reads as pasted tool output rather than part of the document. Remove it or fold it into section 2.",
+    "The 'Repository creation needed: No' row says the repository already exists. That is inferred from tool:repo-access ('available locally'), which is fine, but it could say outright that the existing remote is what the feature branch will push to.",
+    "TSK-03 says risk.py is new, and the output takes this from feat.tasks. It could also confirm from the checkout that src/ap_forecast/risk.py does not exist yet."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 5,
+    "grounded": 5,
+    "useful": 5
+  },
+  "notes": "I checked every statement against the brief's tool view, feat.tasks, org.engineering_stack and the ap_forecast files the agent read.\n\n- **Refusal reason fixed.** The earlier refusal was for citing file:ap_forecast/.git/refs/heads. The output now cites only the files that were read: .git/HEAD, refs/heads/main, refs/heads/dev and refs/heads/feature/story.\n- **Branches.** All three refs contain d67e8662907401467a3f76f9f167e7a60d89ffca, and HEAD is ref: refs/heads/feature/story. The claim of no new commits on the feature branch is a fair inference from that.\n- **Repository facts all match the files.**\n  - __version__ is \"0.9.0\" and __all__ holds the two exports.\n  - The signatures of predict_delay_days and build_explanation_request match.\n  - The three test names match tests/test_forecast.py.\n  - ci.py imports coverage, sets COVERAGE_MIN = 90.0, and its static checks look for print, eval, exec, bare except and lines longer than 140 characters.\n  - CLAUDE.md gives the code and test locations and the branch roles.\n- **Lane mapping, test-file split and version owner** match feat.tasks sections 1 and 2.\n- **No Databricks and no database:** supported by tool:repo-access and org.engineering_stack.\n- **Branch question (RAQ-2):** the conflict between one feature/story branch and per-story feature/<story> branches is correctly raised as non-blocking.\n\nThe outcome, 'repo available with write access', is met and grounded in tool:repo-access."
+}
