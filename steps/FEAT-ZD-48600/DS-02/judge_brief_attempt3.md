@@ -10,8 +10,11 @@
 - feat.tasks: `hobasa-data-science-agent/inputs/FEAT-ZD-48600/DS-02/feat.tasks.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
+- `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
 - `hobasa-data-science-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md`
 - `ap-forecast-sample/CLAUDE.md`
+- `ap-forecast-sample/ci.py`
+- `ap-forecast-sample/src/ap_forecast/__init__.py`
 - `ap-forecast-sample/src/ap_forecast/explain.py`
 - `ap-forecast-sample/src/ap_forecast/models.json`
 - `ap-forecast-sample/src/ap_forecast/predict.py`
@@ -21,16 +24,9 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 
 ## The step brief the agent was given (a valid source, cited as record:brief)
 
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/src/ap_forecast/predict.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
 G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)

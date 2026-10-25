@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: This is attempt 4. The only refusal point was G1: the receipt hash I quoted in the output's opening paragraph does not appear in any source the judge can see. I removed the hash and kept only the input's commit, b0fd4d2, which appears in record:brief. I rewrote task.secrets_scope.md in full; everything else is unchanged from attempt 3 and is grounded only on feat.tasks, tool:repo-access (the permission-table view; org.permission_table is restricted and used by reference only) and record:brief. The full rewrite also removed a stray '[Tool result] ...' line that had again been appended to the end of the draft on disk. No connectors were needed.
-- Tools used: mcp__hobasa-context__context_get, Write
+- Approach: I read feat.tasks to find this lane's tasks, TSK-03 and TSK-04 in ap_forecast. org.permission_table is restricted, so I used it only through the tool view (tool:repo-access), which says no secrets are required or granted for ap_forecast. To check that nothing needs a credential, I read every source file in ap_forecast (predict.py, explain.py, models.json, __init__.py), the existing test file, ci.py and the repository's CLAUDE.md. CLAUDE.md gives the CI command and the branch roles behind the environment table. None of these files reads a credential or an environment variable, and none sends a network request. I used no connector, because the lane adds no dependencies.
+- Tools used: Skill:data-science-steps, Read, Grep, Glob, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,16 +39,15 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 6 | — | — |
-| 2 | resumed | 8 | — | — |
-| 3 | resumed | 1 | 1 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
-| 4 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 1 | 1 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 2 | resumed | 1 | — | — |
+| 3 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Line 45 has a stray artifact, "[Tool result] [ap_forecast] Tool registry: no secrets required or granted (permission table)". It sits outside every section and looks like pasted tool output. Remove it, or move it into the Source column it already backs.
-- Section 2 adds a "Local / CI (task CI bar)" environment row, but feat.tasks section 2 only names the branches main, dev and feature/<story>. Mark this row as agent judgement so nobody reads it as an environment taken from a source.
-- Section 3 says the component that sends the request to acme-llm "needs a provider credential". That is an inference: explain.py (file:ap_forecast/src/ap_forecast/explain.py) only builds the request dict, and models.json holds no credential field. Cite explain.py and models.json for "no outbound call / no credential in this repository", and label the credential remark as an assumption. SSQ-1 already raises it as an open question.
-- The TSK-03 row cites tool:repo-access next to the statement that risk.py imports only predict_delay_days. That fact comes from feat.tasks (TSK-03, "Must not change"), not from the tool view, so cite feat.tasks for it. The tool view supports only the "Secrets needed: None" cell.
+- Section 3 uses branches (`feature/<story>`, `dev`, `main`) and CI as its 'environments'. No source defines deployment environments for ap_forecast. Say that this mapping is an assumption, or name the actual working branch `feature/story` (from `dev` at `d67e866`, per task.repo_access.md), so the scope lines up with what DS-01 established.
+- Section 4 says the component that sends the request to `acme-llm` 'will need a provider credential'. No source states this; it is an inference. Mark it as an assumption in that bullet, not only through SSQ-1.
+- The 'Permission source' row could note that the step saw only the tool-view summary of the restricted org.permission_table and not the table itself. That makes the limit of the evidence explicit for the sampled human reviewer.
+- The trailing '[Tool result] ...' line at the end of the file looks like an appended tool echo, not authored content. Confirm it belongs in the published output.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.

@@ -1,12 +1,7 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/src/ap_forecast/predict.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session
+G1 judge found an unsupported statement: "| `feature/<story>` (working branch `feature/story`) | None | None | No | tool:repo-access; feat.tasks (section 2) |" (The cited sources do not support the working-branch detail. This step's tool:repo-access view says only that no secrets are required or granted, and feat.tasks )
 
 ## Step brief (unchanged except the attempt number)
 # Step DS-02: Access to secrets (attempt 2) for FEAT-ZD-48600

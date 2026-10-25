@@ -1,13 +1,6 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_forecast/src/ap_forecast/predict.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
-G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session
 G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)

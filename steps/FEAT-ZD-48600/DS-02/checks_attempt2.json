@@ -1,12 +1,5 @@
 {
   "failures": [
-    "G2 claim cites file:ap_forecast/src/ap_forecast/predict.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/src/ap_forecast/explain.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/src/ap_forecast/models.json but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session",
-    "G2 claim cites file:ap_forecast/tests/test_forecast.py but the agent never read that file in this session",
     "G2 claim cites file:ap_forecast/CLAUDE.md but the agent never read that file in this session"
   ]
 }
