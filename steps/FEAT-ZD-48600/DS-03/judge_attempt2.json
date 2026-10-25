@@ -1,0 +1,15 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 4 names \"DS-04 (components)\" and \"DS-05 (coding)\" but cites only feat.tasks and feat.design. Those step names come from the data-science-steps SKILL.md, so cite that file (file:hobasa-data-science-agent/.claude/skills/data-science-steps/SKILL.md) there.",
+    "Section 4 says \"this step runs again\" if storage is added later. feat.design A8 supports only the DES-01 re-trigger. Tying the re-run to the DS-03 trigger (\"Task creation, or any re-entry trigger\" in record:brief or the SKILL.md) would ground the second half.",
+    "E-8 says `__init__.py` re-exports the two functions. It could also say the file sets `__version__ = \"0.9.0\"` and `__all__`, which matches the version stated in feat.tasks and feat.design B2. This is a small completeness point and is not needed for the result."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 5,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "I checked every statement against feat.tasks, feat.design, the tool view (\\\"ap_forecast has no database; no migrations exist or are required\\\"), ap_forecast/CLAUDE.md and the ap_forecast source files (predict.py, explain.py, __init__.py, models.json). None of them is unsupported.\n\nThe evidence quotes match the sources:\n- E-1 matches feat.design A1, Data row: \\\"Storage, database, schema migration\\\" is out of scope.\n- E-2 matches feat.design DD-1, quoted word for word.\n- E-3 matches feat.design NF-10, quoted word for word.\n- E-6 matches feat.design A8.\n\nThe task scopes match feat.tasks:\n- E-4: TSK-03 touches risk.py, __init__.py and tests/test_risk.py, with no LLM, no network and no models.json read.\n- E-5: TSK-04 touches explain.py and tests/test_forecast.py, and models.json must not change.\n\nThe code descriptions match the files:\n- predict.py uses only statistics.mean and typing.Iterable to take a rounded mean in memory.\n- explain.py reads only models.json, which sits next to the module, through load_config.\n- models.json holds only provider, model and max_tokens.\n\nThe header details also check out: Python 3.9 standard library, the input commits b0fd4d2 and 722a98f, and the owner and gate. The previous refusal was for citing the directory path file:ap_forecast/src/ap_forecast. That has been fixed: every file citation now names a specific file the agent read.\n\nThe conclusion is that no database change is needed, so the outcome is met trivially. It is well supported by three separate sources: the design, the tool view and the code. Saying \\\"None\\\" under open questions is justified."
+}
