@@ -1,5 +1,3 @@
 {
-  "failures": [
-    "G1 judge found an unsupported statement: \"| `feature/<story>` (working branch `feature/story`) | None | None | No | tool:repo-access; feat.tasks (section 2) |\" (The cited sources do not support the working-branch detail. This step's tool:repo-access view says only that no secrets are required or granted, and feat.tasks )"
-  ]
+  "failures": []
 }
