@@ -1,5 +1,5 @@
 {
   "failures": [
-    "G3 numbers ['82'] in \"The code is committed on feature/story as commit 2e6fb82 with the message 'STORY # task.commit: FEAT\" do not appear in tool:repo; record:memory"
+    "Claude Code session ended no_json: Error: Session ID 62f05094-0dc4-4f24-839c-2b1e2a0f7a42 is already in use.\n"
   ]
 }

@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G3 numbers ['98'] in \"CI passed on commit 9eff98d with 25 tests, coverage 100.0% and 0 static issues.\" do not appear in task.unit_tests"
+  ]
+}

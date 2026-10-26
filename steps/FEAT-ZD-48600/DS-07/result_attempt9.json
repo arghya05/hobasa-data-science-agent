@@ -1,0 +1,18 @@
+{
+  "structured": {
+    "approach": "",
+    "tools_used": [],
+    "claims": [],
+    "open_questions": [],
+    "summary": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  },
+  "meta": {
+    "subtype": "success",
+    "is_error": true,
+    "num_turns": 4,
+    "session_id": "246021ff-ef54-4521-8e98-2d43864a4f26",
+    "total_cost_usd": 2.698187000000002,
+    "permission_denials": [],
+    "result": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  }
+}
