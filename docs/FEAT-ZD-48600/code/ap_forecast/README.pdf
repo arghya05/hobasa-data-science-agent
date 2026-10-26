@@ -22,59 +22,67 @@ endobj
 endobj
 5 0 obj
 <<
-/Contents 9 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 8 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
+/A <<
+/S /URI /Type /Action /URI (docs/ap_forecast.md)
+>> /Border [ 0 0 0 ] /Rect [ 281.9646 512.1354 370.1436 523.5354 ] /Subtype /Link /Type /Annot
 >>
 endobj
 6 0 obj
 <<
-/PageMode /UseNone /Pages 8 0 R /Type /Catalog
+/Annots [ 5 0 R ] /Contents 10 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 9 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 
+  /Trans <<
+
+>> /Type /Page
 >>
 endobj
 7 0 obj
 <<
-/Author (\(anonymous\)) /CreationDate (D:20261025123023+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261025123023+05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
-  /Subject (\(unspecified\)) /Title (ap-forecast-sample \267 README.md) /Trapped /False
+/PageMode /UseNone /Pages 9 0 R /Type /Catalog
 >>
 endobj
 8 0 obj
 <<
-/Count 1 /Kids [ 5 0 R ] /Type /Pages
+/Author (\(anonymous\)) /CreationDate (D:20261026135933+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261026135933+05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (\(unspecified\)) /Title (ap-forecast-sample \267 README.md) /Trapped /False
 >>
 endobj
 9 0 obj
 <<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 494
+/Count 1 /Kids [ 6 0 R ] /Type /Pages
+>>
+endobj
+10 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 1366
 >>
 stream
-Gat=f>AMtI(l%MN/)JIN&6UC(p?p?KTTI%AqJ$Fr@]QJ$/3Ajn2=/@ZG1,<.d"^ff?0LeBGossiIBe7H9&MTrY[h,]kqe\P''Ta]FEC]I8D%c)Vc=p-'e9;/'$e?"7##^*-(7PPJXq+BN)2,@#EO_'8h-V_`k%a(=,k>ohG*^TXLADK\Vfm\R*P.:Us/?6[GDb)Db+5thK0:r7d$YrWG//;&rKM3I(rCC#>kd5;_k'SKI]9]s+i(6`t0d^=PO)>]M%lWdfAL-Y=gi1)<+mILdH2ib?f1/<6Ra+1okYL]ZL_\Ythp*Z<4ST0*ZLb1`j!?fZ_-XZL5fF>YNVgYPCT+MUH9bfpVU*!LA,LDfk[lro<b;h<u(h2#3M4-$2CqalcO\^ae`PfjO`Q0mSmAPP\/,G&i_7X_shLhWnILmU=u;XgUacNS,>rh@Vji/7s+`d0BrCik>"E3:*,B?.bffh+M;_Z@^Tnk;iJG)<Aa"09A9K8H~>endstream
+Gat=*D/\/e&H;*)EUYYM.;W-4,t_p\!Eg'P)j6mhN"+E%(lC`9l7>QX9+h@*nNH0^ZKJ^JJo+()miFZ:p[AG*G`hRKNrXX"^h?Dl:mfIXR(<Tf41LjRlM%`)W<'JWX##YqS:Ssj8h:p'drHFC6Fou$88[**\j7435TQD`guL/G5kC/t4ALV!Abe%OU1>QX9">BA\(<S5[sAb((J)2m!-/C0:G@'h*.I=`7d\p.boPVLQAP*N==4B-]:]gTg'.eQEr=QOL^YsPL=)@iER]^k<BE7$W<;6,?MiZJDAUT$"<"uhY>Ilr>>\'rM<J4b#RFnSLkO!c4H(RKXW_$Y\FFSM*rSo+?NBXBo*XgYp3JLlqdsM&gb@$i93T"*-P6#6ppF=TXY#!7%DQNu1Yh$3\8?GOD7M%,,.(ga6`X'jklS4&W<bgT(BJ.$>-SHd=F'35G`W[k0mrOI*.&GVLf6j^lp"U/B<_M6"ss:nGP<4dPEdMrYb^9"+gP@.LI/kihqg71*0"+]>T4D\3dM.p-s>`V=>KA54^"DSK%k*+'hr7Bp6e40\BZtJFI>n'_dH"p,)>u`T'k1/lILkua2"cn(0S#NLc1/03ZEJi7[^lqeqX]4%M#JRi?Z'Zo7]*u;O4(5KBY-DUp%9k8.`2-cA>--a7s"708D7%NT<MXZ\(G$E2tbNh<b0#ZRt3/Q!CXNV.P:fcDK;Nbjm`!:G5L^a#`LJcpfOs/g'(>#+2ZXn0Gqnbj)9)kmTlb$3NsZ.2J;RcN8KaY*.\c^pnts.(#>;O<C8C56d>SF2+-,Wg%+qPeMt_lL$1ldR@`XFgNUcMe0D#?Bhm&Si#r.@b`t"+DGUud5$5u@VnTHLiBk[%]h%t!5p?#h#ae3Xl>]'79;/R?dY"aPQAj-l,GGacO'M-Y>7Ts$>(;-Rak:mXXP@!_/8p0X7kr$EZQi^rZd_b9a.E,4XVZEA5('^9U&r9a?ZH/.V1G.@n\dGTGbCqq/SD0I<]G5\(+IFVt*S]OK6!#W^"23)m_;lGAO_23qL2s(0DCM[,uT1Id6/-ZRAGDmT??%;#GMHic99ghnq)2V,>fW,Eqo0K#_oIke9!a?5oAZSJh=LfM6VjT:,d[kKX&k2$9f,SH4,<#,oYE3%@_k6ga-uTju0LXlCe7`AZo/O*JJ"@39bTk1^+ooaY\ie+>h?X1d$FQl498(a+d#36e.l,6Komr(S0SFP2hKIi/!*H3n53IXmH=-p'pkXoGnsR*U'A_k0rTE8;T91[DX;.ms9+b1alY4jin(`&Q9=Y`h5rI2nmg@27'V>5!qe`J$&rE`@\$aOO#<iJ?*krQX2"[8XV4-En<27\-J7:%?5[I_)/V%,TY`oY(C`%hj-~>endstream
 endobj
 xref
-0 10
+0 11
 0000000000 65535 f 
 0000000061 00000 n 
 0000000112 00000 n 
 0000000219 00000 n 
 0000000331 00000 n 
 0000000436 00000 n 
-0000000639 00000 n 
-0000000707 00000 n 
-0000001007 00000 n 
-0000001066 00000 n 
+0000000607 00000 n 
+0000000829 00000 n 
+0000000897 00000 n 
+0000001197 00000 n 
+0000001256 00000 n 
 trailer
 <<
 /ID 
-[<b86cd882db4ea35f0aee3e8d11197353><b86cd882db4ea35f0aee3e8d11197353>]
+[<c49b5941d1f06494b9555103b5a07c01><c49b5941d1f06494b9555103b5a07c01>]
 % ReportLab generated PDF document -- digest (opensource)
 
-/Info 7 0 R
-/Root 6 0 R
-/Size 10
+/Info 8 0 R
+/Root 7 0 R
+/Size 11
 >>
 startxref
-1650
+2714
 %%EOF
